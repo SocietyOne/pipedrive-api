@@ -1,5 +1,9 @@
 package pipedrive
 
+import (
+	"encoding/json"
+)
+
 const (
 	VisibleToOwnersAndFollowers = 1
 	VisibleToWholeCompany       = 3
@@ -38,6 +42,13 @@ type AdditionalData struct {
 	SinceTimestamp      string     `json:"since_timestamp"`
 	LastTimestampOnPage string     `json:"last_timestamp_on_page"`
 	Pagination          Pagination `json:"pagination"`
+}
+
+type DataResponse struct {
+	Success        bool            `json:"success,omitempty"`
+	Data           json.RawMessage `json:"data,omitempty"`
+	AdditionalData AdditionalData  `json:"additional_data,omitempty"`
+	RelatedObjects interface{}     `json:"related_objects,omitempty"`
 }
 
 type DeleteMultipleOptions struct {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/genert/pipedrive-api/pipedrive"
+	"github.com/SocietyOne/pipedrive-api/pipedrive"
 )
 
 var (
@@ -50,7 +50,8 @@ func init() {
 		os.Exit(1)
 	} else {
 		config := &pipedrive.Config{
-			APIKey: token,
+			APIKey:  token,
+			BaseURL: "https://api.pipedrive.com",
 		}
 
 		client = pipedrive.NewClient(config)

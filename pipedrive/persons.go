@@ -14,73 +14,59 @@ type PersonsService service
 
 // Person represents a Pipedrive person.
 type Person struct {
-	ID        int `json:"id"`
-	CompanyID int `json:"company_id"`
-	OwnerID   struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Email      string `json:"email"`
-		HasPic     bool   `json:"has_pic"`
-		PicHash    string `json:"pic_hash"`
-		ActiveFlag bool   `json:"active_flag"`
-		Value      int    `json:"value"`
-	} `json:"owner_id"`
-	OrgID                       interface{} `json:"org_id"`
-	Name                        string      `json:"name"`
-	FirstName                   string      `json:"first_name"`
-	LastName                    string      `json:"last_name"`
-	OpenDealsCount              int         `json:"open_deals_count"`
-	RelatedOpenDealsCount       int         `json:"related_open_deals_count"`
-	ClosedDealsCount            int         `json:"closed_deals_count"`
-	RelatedClosedDealsCount     int         `json:"related_closed_deals_count"`
-	ParticipantOpenDealsCount   int         `json:"participant_open_deals_count"`
-	ParticipantClosedDealsCount int         `json:"participant_closed_deals_count"`
-	EmailMessagesCount          int         `json:"email_messages_count"`
-	ActivitiesCount             int         `json:"activities_count"`
-	DoneActivitiesCount         int         `json:"done_activities_count"`
-	UndoneActivitiesCount       int         `json:"undone_activities_count"`
-	ReferenceActivitiesCount    int         `json:"reference_activities_count"`
-	FilesCount                  int         `json:"files_count"`
-	NotesCount                  int         `json:"notes_count"`
-	FollowersCount              int         `json:"followers_count"`
-	WonDealsCount               int         `json:"won_deals_count"`
-	RelatedWonDealsCount        int         `json:"related_won_deals_count"`
-	LostDealsCount              int         `json:"lost_deals_count"`
-	RelatedLostDealsCount       int         `json:"related_lost_deals_count"`
-	ActiveFlag                  bool        `json:"active_flag"`
-	Phone                       []struct {
-		Value   string `json:"value"`
-		Primary bool   `json:"primary"`
-	} `json:"phone"`
-	Email []struct {
-		Value   string `json:"value"`
-		Primary bool   `json:"primary"`
-	} `json:"email"`
-	FirstChar                       string      `json:"first_char"`
-	UpdateTime                      string      `json:"update_time"`
-	AddTime                         string      `json:"add_time"`
-	VisibleTo                       string      `json:"visible_to"`
-	PictureID                       interface{} `json:"picture_id"`
-	NextActivityDate                interface{} `json:"next_activity_date"`
-	NextActivityTime                interface{} `json:"next_activity_time"`
-	NextActivityID                  interface{} `json:"next_activity_id"`
-	LastActivityID                  int         `json:"last_activity_id"`
-	LastActivityDate                string      `json:"last_activity_date"`
-	TimelineLastActivityTime        interface{} `json:"timeline_last_activity_time"`
-	TimelineLastActivityTimeByOwner interface{} `json:"timeline_last_activity_time_by_owner"`
-	LastIncomingMailTime            interface{} `json:"last_incoming_mail_time"`
-	LastOutgoingMailTime            interface{} `json:"last_outgoing_mail_time"`
-	OrgName                         interface{} `json:"org_name"`
-	OwnerName                       string      `json:"owner_name"`
-	CcEmail                         string      `json:"cc_email"`
+	ID                              int         `json:"id,omitempty"`
+	CompanyID                       int         `json:"company_id,omitempty"`
+	OwnerID                         interface{} `json:"owner_id,omitempty"`
+	OrgID                           interface{} `json:"org_id,omitempty"`
+	Name                            string      `json:"name,omitempty"`
+	FirstName                       string      `json:"first_name,omitempty"`
+	LastName                        string      `json:"last_name,omitempty"`
+	OpenDealsCount                  int         `json:"open_deals_count,omitempty"`
+	RelatedOpenDealsCount           int         `json:"related_open_deals_count,omitempty"`
+	ClosedDealsCount                int         `json:"closed_deals_count,omitempty"`
+	RelatedClosedDealsCount         int         `json:"related_closed_deals_count,omitempty"`
+	ParticipantOpenDealsCount       int         `json:"participant_open_deals_count,omitempty"`
+	ParticipantClosedDealsCount     int         `json:"participant_closed_deals_count,omitempty"`
+	EmailMessagesCount              int         `json:"email_messages_count,omitempty"`
+	ActivitiesCount                 int         `json:"activities_count,omitempty"`
+	DoneActivitiesCount             int         `json:"done_activities_count,omitempty"`
+	UndoneActivitiesCount           int         `json:"undone_activities_count,omitempty"`
+	ReferenceActivitiesCount        int         `json:"reference_activities_count,omitempty"`
+	FilesCount                      int         `json:"files_count,omitempty"`
+	NotesCount                      int         `json:"notes_count,omitempty"`
+	FollowersCount                  int         `json:"followers_count,omitempty"`
+	WonDealsCount                   int         `json:"won_deals_count,omitempty"`
+	RelatedWonDealsCount            int         `json:"related_won_deals_count,omitempty"`
+	LostDealsCount                  int         `json:"lost_deals_count,omitempty"`
+	RelatedLostDealsCount           int         `json:"related_lost_deals_count,omitempty"`
+	ActiveFlag                      bool        `json:"active_flag,omitempty"`
+	Phone                           interface{} `json:"phone,omitempty"`
+	Email                           interface{} `json:"email,omitempty"`
+	FirstChar                       string      `json:"first_char,omitempty"`
+	UpdateTime                      string      `json:"update_time,omitempty"`
+	AddTime                         string      `json:"add_time,omitempty"`
+	VisibleTo                       string      `json:"visible_to,omitempty"`
+	PictureID                       interface{} `json:"picture_id,omitempty"`
+	NextActivityDate                interface{} `json:"next_activity_date,omitempty"`
+	NextActivityTime                interface{} `json:"next_activity_time,omitempty"`
+	NextActivityID                  interface{} `json:"next_activity_id,omitempty"`
+	LastActivityID                  int         `json:"last_activity_id,omitempty"`
+	LastActivityDate                string      `json:"last_activity_date,omitempty"`
+	TimelineLastActivityTime        interface{} `json:"timeline_last_activity_time,omitempty"`
+	TimelineLastActivityTimeByOwner interface{} `json:"timeline_last_activity_time_by_owner,omitempty"`
+	LastIncomingMailTime            interface{} `json:"last_incoming_mail_time,omitempty"`
+	LastOutgoingMailTime            interface{} `json:"last_outgoing_mail_time,omitempty"`
+	OrgName                         interface{} `json:"org_name,omitempty"`
+	OwnerName                       string      `json:"owner_name,omitempty"`
+	CcEmail                         string      `json:"cc_email,omitempty"`
 }
 
 func (p Person) String() string {
 	return Stringify(p)
 }
 
-// PersonsRespose represents multiple persons response.
-type PersonsRespose struct {
+// PersonsResponse represents multiple persons response.
+type PersonsResponse struct {
 	Success        bool           `json:"success"`
 	Data           []Person       `json:"data"`
 	AdditionalData AdditionalData `json:"additional_data"`
@@ -107,14 +93,14 @@ type PersonAddFollowerResponse struct {
 // List all persons.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons
-func (s *PersonsService) List(ctx context.Context) (*PersonsRespose, *Response, error) {
+func (s *PersonsService) List(ctx context.Context) (*DataResponse, *Response, error) {
 	req, err := s.client.NewRequest(http.MethodGet, "/persons", nil, nil)
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var record *PersonsRespose
+	var record *DataResponse
 
 	resp, err := s.client.Do(ctx, req, &record)
 
@@ -154,36 +140,21 @@ func (s *PersonsService) AddFollower(ctx context.Context, id int, userID int) (*
 // PersonCreateOptions specifices the optional parameters to the
 // PersonsService.Create method.
 type PersonCreateOptions struct {
-	Name      string    `url:"name"`
-	OwnerID   uint      `url:"owner_id"`
-	OrgID     uint      `url:"org_id"`
-	Email     string    `url:"email"`
-	Phone     string    `url:"phone"`
-	VisibleTo VisibleTo `url:"visible_to"`
-	AddTime   Timestamp `url:"add_time"`
+	Name      string    `url:"name" json:"name"`
+	OwnerID   uint      `url:"owner_id" json:"owner_id,omitempty"`
+	OrgID     uint      `url:"org_id" json:"org_id,omitempty"`
+	Email     string    `url:"email" json:"email,omitempty"`
+	Phone     string    `url:"phone" json:"phone,omitempty"`
+	VisibleTo VisibleTo `url:"visible_to" json:"visible_to,omitempty"`
+	AddTime   Timestamp `url:"add_time" json:"add_time,omitempty"`
 }
 
 // Create a new person.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/post_persons
 func (s *PersonsService) Create(ctx context.Context, opt *PersonCreateOptions) (*PersonResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodPost, "/persons", nil, struct {
-		Name      string    `url:"name"`
-		OwnerID   uint      `url:"owner_id"`
-		OrgID     uint      `url:"org_id"`
-		Email     string    `url:"email"`
-		Phone     string    `url:"phone"`
-		VisibleTo VisibleTo `url:"visible_to"`
-		AddTime   string    `url:"add_time"`
-	}{
-		opt.Name,
-		opt.OwnerID,
-		opt.OrgID,
-		opt.Email,
-		opt.Phone,
-		opt.VisibleTo,
-		opt.AddTime.FormatFull(),
-	})
+
+	req, err := s.client.NewRequest(http.MethodPost, "/persons", nil, opt)
 
 	if err != nil {
 		return nil, nil, err
@@ -214,7 +185,7 @@ type PersonUpdateOptions struct {
 // Update a specific person.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/put_persons_id
-func (s *PersonsService) Update(ctx context.Context, id int, opt *PersonUpdateOptions) (*PersonResponse, *Response, error) {
+func (s *PersonsService) Update(ctx context.Context, id int, opt interface{}) (*PersonResponse, *Response, error) {
 	uri := fmt.Sprintf("/persons/%v", id)
 	req, err := s.client.NewRequest(http.MethodPut, uri, nil, opt)
 
@@ -314,4 +285,56 @@ func (s *PersonsService) DeleteMultiple(ctx context.Context, ids []int) (*Respon
 	}
 
 	return s.client.Do(ctx, req, nil)
+}
+
+// Find Searches all persons by their name
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_find
+func (s *PersonsService) Find(ctx context.Context, term string) (*DataResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/persons/find", &SearchOptions{
+		Term: term,
+	}, nil)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var record *DataResponse
+
+	resp, err := s.client.Do(ctx, req, &record)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return record, resp, nil
+}
+
+// FindByEmail Searches all persons by their Email
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_find
+func (s *PersonsService) FindByEmail(ctx context.Context, email string) (*DataResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/persons/find", struct {
+		Term          string `url:"term"`
+		SearchByEmail int    `url:"search_by_email"`
+	}{
+		email,
+		1,
+	}, nil)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fmt.Println(req)
+
+	var record *DataResponse
+
+	resp, err := s.client.Do(ctx, req, &record)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return record, resp, nil
 }

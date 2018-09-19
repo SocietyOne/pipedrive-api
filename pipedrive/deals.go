@@ -14,97 +14,62 @@ type DealService service
 
 // Deal represents a Pipedrive deal.
 type Deal struct {
-	ID            int `json:"id"`
-	CreatorUserID struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Email      string `json:"email"`
-		HasPic     bool   `json:"has_pic"`
-		PicHash    string `json:"pic_hash"`
-		ActiveFlag bool   `json:"active_flag"`
-		Value      int    `json:"value"`
-	} `json:"creator_user_id"`
-	UserID struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Email      string `json:"email"`
-		HasPic     bool   `json:"has_pic"`
-		PicHash    string `json:"pic_hash"`
-		ActiveFlag bool   `json:"active_flag"`
-		Value      int    `json:"value"`
-	} `json:"user_id"`
-	PersonID struct {
-		Name  string `json:"name"`
-		Email []struct {
-			Value   string `json:"value"`
-			Primary bool   `json:"primary"`
-		} `json:"email"`
-		Phone []struct {
-			Value   string `json:"value"`
-			Primary bool   `json:"primary"`
-		} `json:"phone"`
-		Value int `json:"value"`
-	} `json:"person_id"`
-	OrgID struct {
-		Name        string      `json:"name"`
-		PeopleCount int         `json:"people_count"`
-		OwnerID     int         `json:"owner_id"`
-		Address     interface{} `json:"address"`
-		CcEmail     string      `json:"cc_email"`
-		Value       int         `json:"value"`
-	} `json:"org_id"`
-	StageID                                      int         `json:"stage_id"`
-	Title                                        string      `json:"title"`
-	Value                                        int         `json:"value"`
-	Currency                                     string      `json:"currency"`
-	AddTime                                      string      `json:"add_time"`
-	UpdateTime                                   string      `json:"update_time"`
-	StageChangeTime                              string      `json:"stage_change_time"`
-	Active                                       bool        `json:"active"`
-	Deleted                                      bool        `json:"deleted"`
-	Status                                       string      `json:"status"`
-	Probability                                  interface{} `json:"probability"`
-	NextActivityDate                             interface{} `json:"next_activity_date"`
-	NextActivityTime                             interface{} `json:"next_activity_time"`
-	NextActivityID                               interface{} `json:"next_activity_id"`
-	LastActivityID                               int         `json:"last_activity_id"`
-	LastActivityDate                             string      `json:"last_activity_date"`
-	LostReason                                   string      `json:"lost_reason"`
-	VisibleTo                                    string      `json:"visible_to"`
-	CloseTime                                    string      `json:"close_time"`
-	PipelineID                                   int         `json:"pipeline_id"`
-	WonTime                                      interface{} `json:"won_time"`
-	FirstWonTime                                 interface{} `json:"first_won_time"`
-	LostTime                                     string      `json:"lost_time"`
-	ProductsCount                                int         `json:"products_count"`
-	FilesCount                                   int         `json:"files_count"`
-	NotesCount                                   int         `json:"notes_count"`
-	FollowersCount                               int         `json:"followers_count"`
-	EmailMessagesCount                           int         `json:"email_messages_count"`
-	ActivitiesCount                              int         `json:"activities_count"`
-	DoneActivitiesCount                          int         `json:"done_activities_count"`
-	UndoneActivitiesCount                        int         `json:"undone_activities_count"`
-	ReferenceActivitiesCount                     int         `json:"reference_activities_count"`
-	ParticipantsCount                            int         `json:"participants_count"`
-	ExpectedCloseDate                            interface{} `json:"expected_close_date"`
-	LastIncomingMailTime                         interface{} `json:"last_incoming_mail_time"`
-	LastOutgoingMailTime                         interface{} `json:"last_outgoing_mail_time"`
-	Eight02Aa45Ecc05F31Fcebe8B706510389F56B7A041 interface{} `json:"802aa45ecc05f31fcebe8b706510389f56b7a041"`
-	StageOrderNr                                 int         `json:"stage_order_nr"`
-	PersonName                                   string      `json:"person_name"`
-	OrgName                                      string      `json:"org_name"`
-	NextActivitySubject                          interface{} `json:"next_activity_subject"`
-	NextActivityType                             interface{} `json:"next_activity_type"`
-	NextActivityDuration                         interface{} `json:"next_activity_duration"`
-	NextActivityNote                             interface{} `json:"next_activity_note"`
-	FormattedValue                               string      `json:"formatted_value"`
-	RottenTime                                   interface{} `json:"rotten_time"`
-	WeightedValue                                int         `json:"weighted_value"`
-	FormattedWeightedValue                       string      `json:"formatted_weighted_value"`
-	OwnerName                                    string      `json:"owner_name"`
-	CcEmail                                      string      `json:"cc_email"`
-	OrgHidden                                    bool        `json:"org_hidden"`
-	PersonHidden                                 bool        `json:"person_hidden"`
+	ID                       int         `json:"id,omitempty"`
+	CreatorUserID            interface{} `json:"creator_user_id,omitempty"`
+	UserID                   interface{} `json:"user_id,omitempty"`
+	PersonID                 interface{} `json:"person_id,omitempty"`
+	OrgID                    interface{} `json:"org_id"`
+	StageID                  int         `json:"stage_id,omitempty"`
+	Title                    string      `json:"title,omitempty"`
+	Value                    int         `json:"value,omitempty"`
+	Currency                 string      `json:"currency,omitempty"`
+	AddTime                  string      `json:"add_time,omitempty"`
+	UpdateTime               string      `json:"update_time,omitempty"`
+	StageChangeTime          string      `json:"stage_change_time,omitempty"`
+	Active                   bool        `json:"active,omitempty"`
+	Deleted                  bool        `json:"deleted,omitempty"`
+	Status                   string      `json:"status,omitempty"`
+	Probability              interface{} `json:"probability,omitempty"`
+	NextActivityDate         interface{} `json:"next_activity_date,omitempty"`
+	NextActivityTime         interface{} `json:"next_activity_time,omitempty"`
+	NextActivityID           interface{} `json:"next_activity_id,omitempty"`
+	LastActivityID           int         `json:"last_activity_id,omitempty"`
+	LastActivityDate         string      `json:"last_activity_date,omitempty"`
+	LostReason               string      `json:"lost_reason,omitempty"`
+	VisibleTo                string      `json:"visible_to,omitempty"`
+	CloseTime                string      `json:"close_time,omitempty"`
+	PipelineID               int         `json:"pipeline_id,omitempty"`
+	WonTime                  interface{} `json:"won_time,omitempty"`
+	FirstWonTime             interface{} `json:"first_won_time,omitempty"`
+	LostTime                 string      `json:"lost_time,omitempty"`
+	ProductsCount            int         `json:"products_count,omitempty"`
+	FilesCount               int         `json:"files_count,omitempty"`
+	NotesCount               int         `json:"notes_count,omitempty"`
+	FollowersCount           int         `json:"followers_count,omitempty"`
+	EmailMessagesCount       int         `json:"email_messages_count,omitempty"`
+	ActivitiesCount          int         `json:"activities_count,omitempty"`
+	DoneActivitiesCount      int         `json:"done_activities_count,omitempty"`
+	UndoneActivitiesCount    int         `json:"undone_activities_count,omitempty"`
+	ReferenceActivitiesCount int         `json:"reference_activities_count,omitempty"`
+	ParticipantsCount        int         `json:"participants_count,omitempty"`
+	ExpectedCloseDate        interface{} `json:"expected_close_date,omitempty"`
+	LastIncomingMailTime     interface{} `json:"last_incoming_mail_time,omitempty"`
+	LastOutgoingMailTime     interface{} `json:"last_outgoing_mail_time,omitempty"`
+	StageOrderNr             int         `json:"stage_order_nr,omitempty"`
+	PersonName               string      `json:"person_name,omitempty"`
+	OrgName                  string      `json:"org_name,omitempty"`
+	NextActivitySubject      interface{} `json:"next_activity_subject,omitempty"`
+	NextActivityType         interface{} `json:"next_activity_type,omitempty"`
+	NextActivityDuration     interface{} `json:"next_activity_duration,omitempty"`
+	NextActivityNote         interface{} `json:"next_activity_note,omitempty"`
+	FormattedValue           string      `json:"formatted_value,omitempty"`
+	RottenTime               interface{} `json:"rotten_time,omitempty"`
+	WeightedValue            int         `json:"weighted_value,omitempty"`
+	FormattedWeightedValue   string      `json:"formatted_weighted_value,omitempty"`
+	OwnerName                string      `json:"owner_name,omitempty"`
+	CcEmail                  string      `json:"cc_email,omitempty"`
+	OrgHidden                bool        `json:"org_hidden,omitempty"`
+	PersonHidden             bool        `json:"person_hidden,omitempty"`
 }
 
 func (d Deal) String() string {
@@ -128,7 +93,7 @@ type DealResponse struct {
 // ListUpdates about a deal.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals_id_flow
-func (s *DealService) ListUpdates(ctx context.Context, id int) (*DealsResponse, *Response, error) {
+func (s *DealService) ListUpdates(ctx context.Context, id int) (*DataResponse, *Response, error) {
 	uri := fmt.Sprintf("/deals/%v/flow", id)
 	req, err := s.client.NewRequest(http.MethodGet, uri, nil, nil)
 
@@ -136,7 +101,7 @@ func (s *DealService) ListUpdates(ctx context.Context, id int) (*DealsResponse, 
 		return nil, nil, err
 	}
 
-	var record *DealsResponse
+	var record *DataResponse
 
 	resp, err := s.client.Do(ctx, req, &record)
 
@@ -150,7 +115,7 @@ func (s *DealService) ListUpdates(ctx context.Context, id int) (*DealsResponse, 
 // Find deals by name.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals_find
-func (s *DealService) Find(ctx context.Context, term string) (*DealsResponse, *Response, error) {
+func (s *DealService) Find(ctx context.Context, term string) (*DataResponse, *Response, error) {
 	req, err := s.client.NewRequest(http.MethodGet, "/deals/find", &SearchOptions{
 		Term: term,
 	}, nil)
@@ -159,7 +124,7 @@ func (s *DealService) Find(ctx context.Context, term string) (*DealsResponse, *R
 		return nil, nil, err
 	}
 
-	var record *DealsResponse
+	var record *DataResponse
 
 	resp, err := s.client.Do(ctx, req, &record)
 
@@ -173,14 +138,14 @@ func (s *DealService) Find(ctx context.Context, term string) (*DealsResponse, *R
 // List all deals.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals
-func (s *DealService) List(ctx context.Context) (*DealsResponse, *Response, error) {
+func (s *DealService) List(ctx context.Context) (*DataResponse, *Response, error) {
 	req, err := s.client.NewRequest(http.MethodGet, "/deals", nil, nil)
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var record *DealsResponse
+	var record *DataResponse
 
 	resp, err := s.client.Do(ctx, req, &record)
 
@@ -194,7 +159,7 @@ func (s *DealService) List(ctx context.Context) (*DealsResponse, *Response, erro
 // Duplicate a deal.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/post_deals_id_duplicate
-func (s *DealService) Duplicate(ctx context.Context, id int) (*DealResponse, *Response, error) {
+func (s *DealService) Duplicate(ctx context.Context, id int) (*DataResponse, *Response, error) {
 	uri := fmt.Sprintf("/deals/%v/duplicate", id)
 	req, err := s.client.NewRequest(http.MethodPost, uri, nil, nil)
 
@@ -202,7 +167,7 @@ func (s *DealService) Duplicate(ctx context.Context, id int) (*DealResponse, *Re
 		return nil, nil, err
 	}
 
-	var record *DealResponse
+	var record *DataResponse
 
 	resp, err := s.client.Do(ctx, req, &record)
 
@@ -250,15 +215,23 @@ type DealsUpdateOptions struct {
 
 // Update a deal.
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/put_deals_id
-func (s *DealService) Update(ctx context.Context, id int, opt *DealsUpdateOptions) (*Response, error) {
+func (s *DealService) Update(ctx context.Context, id int, deal interface{}) (*DataResponse, *Response, error) {
 	uri := fmt.Sprintf("/deals/%v", id)
-	req, err := s.client.NewRequest(http.MethodPut, uri, nil, opt)
+	req, err := s.client.NewRequest(http.MethodPut, uri, nil, deal)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	var record *DataResponse
+
+	resp, err := s.client.Do(ctx, req, &record)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return record, resp, nil
 }
 
 // DeleteFollower of a deal.
@@ -330,4 +303,44 @@ func (s *DealService) DeleteAttachedProduct(ctx context.Context, dealID int, pro
 	}
 
 	return s.client.Do(ctx, req, nil)
+}
+
+// Create a deal.
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/post_deals
+func (s *DealService) Create(ctx context.Context, deal interface{}) (*DataResponse, *Response, error) {
+	uri := fmt.Sprintf("/deals")
+	req, err := s.client.NewRequest(http.MethodPost, uri, nil, deal)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var record *DataResponse
+
+	resp, err := s.client.Do(ctx, req, &record)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return record, resp, nil
+}
+
+func (s *DealService) Get(ctx context.Context, id int) (*DataResponse, *Response, error) {
+	uri := fmt.Sprintf("/deals/%v", id)
+	req, err := s.client.NewRequest(http.MethodGet, uri, nil, nil)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var record *DataResponse
+
+	resp, err := s.client.Do(ctx, req, &record)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return record, resp, nil
 }

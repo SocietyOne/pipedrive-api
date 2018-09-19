@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/genert/pipedrive-api/pipedrive"
+	"github.com/SocietyOne/pipedrive-api/pipedrive"
 )
 
 func TestRecents_List(t *testing.T) {
