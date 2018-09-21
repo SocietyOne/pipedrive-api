@@ -11,6 +11,17 @@ import (
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/SearchResults
 type SearchResultsService service
 
+//Enum for field type when searching by field value
+type SearchFieldType string
+
+//Enums
+const (
+	SearchDealField         SearchFieldType = "dealField"
+	SearchPersonField       SearchFieldType = "personField"
+	SearchOrganizationField SearchFieldType = "organizationField"
+	SearchProductField      SearchFieldType = "productField"
+)
+
 // SearchResult represents a Pipedrive search result.
 type SearchResult struct {
 	Type        string  `json:"type,omitempty"`
