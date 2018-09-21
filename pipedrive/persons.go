@@ -152,7 +152,7 @@ type PersonCreateOptions struct {
 // Create a new person.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/post_persons
-func (s *PersonsService) Create(ctx context.Context, opt *PersonCreateOptions) (*PersonResponse, *Response, error) {
+func (s *PersonsService) Create(ctx context.Context, opt interface{}) (*PersonResponse, *Response, error) {
 
 	req, err := s.client.NewRequest(http.MethodPost, "/persons", nil, opt)
 

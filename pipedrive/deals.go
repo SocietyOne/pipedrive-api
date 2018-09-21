@@ -21,7 +21,7 @@ type Deal struct {
 	OrgID                    interface{} `json:"org_id"`
 	StageID                  int         `json:"stage_id,omitempty"`
 	Title                    string      `json:"title,omitempty"`
-	Value                    int         `json:"value,omitempty"`
+	Value                    float64     `json:"value,omitempty"`
 	Currency                 string      `json:"currency,omitempty"`
 	AddTime                  string      `json:"add_time,omitempty"`
 	UpdateTime               string      `json:"update_time,omitempty"`
