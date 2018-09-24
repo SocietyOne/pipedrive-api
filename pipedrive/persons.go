@@ -152,7 +152,7 @@ type PersonCreateOptions struct {
 // Create a new person.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/post_persons
-func (s *PersonsService) Create(ctx context.Context, opt interface{}) (*PersonResponse, *Response, error) {
+func (s *PersonsService) Create(ctx context.Context, opt interface{}) (*DataResponse, *Response, error) {
 
 	req, err := s.client.NewRequest(http.MethodPost, "/persons", nil, opt)
 
@@ -160,7 +160,7 @@ func (s *PersonsService) Create(ctx context.Context, opt interface{}) (*PersonRe
 		return nil, nil, err
 	}
 
-	var record *PersonResponse
+	var record *DataResponse
 
 	resp, err := s.client.Do(ctx, req, &record)
 
@@ -326,7 +326,27 @@ func (s *PersonsService) FindByEmail(ctx context.Context, email string) (*DataRe
 		return nil, nil, err
 	}
 
-	fmt.Println(req)
+	var record *DataResponse
+
+	resp, err := s.client.Do(ctx, req, &record)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return record, resp, nil
+}
+
+//Get returns a person by their id
+//
+//Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_id
+func (s *PersonsService) Get(ctx context.Context, id int) (*DataResponse, *Response, error) {
+	uri := fmt.Sprintf("/persons/%v", id)
+	req, err := s.client.NewRequest(http.MethodGet, uri, nil, nil)
+
+	if err != nil {
+		return nil, nil, err
+	}
 
 	var record *DataResponse
 

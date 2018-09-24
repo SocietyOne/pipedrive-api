@@ -12,6 +12,15 @@ import (
 // Pipedrive API dcos: https://developers.pipedrive.com/docs/api/v1/#!/Deals
 type DealService service
 
+type DealStatus string
+
+const (
+	Open    DealStatus = "open"
+	Won     DealStatus = "won"
+	Lost    DealStatus = "lost"
+	Deleted DealStatus = "deleted"
+)
+
 // Deal represents a Pipedrive deal.
 type Deal struct {
 	ID                       int         `json:"id,omitempty"`
