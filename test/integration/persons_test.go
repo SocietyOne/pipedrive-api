@@ -81,14 +81,6 @@ func TestPersons_FindByEmail(t *testing.T) {
 	}
 
 	fmt.Println(httpResponse.StatusCode)
-	fmt.Println(string(response.Data))
 
-	var persons []pipedrive.Person
-	err = json.NewDecoder(bytes.NewReader(response.Data)).Decode(&persons)
-
-	if response.Success != true {
-		t.Error("Got invalid search results")
-	}
-
-	assert.Equal(t, email, persons[0].Email, "Response email does not match search email")
+	assert.Equal(t, email, response.Data[0].Email, "Response email does not match search email")
 }
