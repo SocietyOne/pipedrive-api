@@ -310,10 +310,30 @@ func (s *PersonsService) Find(ctx context.Context, term string) (*DataResponse, 
 	return record, resp, nil
 }
 
+//FindPersonResult describes a person result from get_persons_find
+type FindPersonResult struct {
+	ID               int           `json:"id,omitempty"`
+	Name             string        `json:"name,omitempty"`
+	Email            string        `json:"email,omitempty"`
+	Phone            string        `json:"phone,omitempty"`
+	OrgID            interface{}   `json:"org_id,omitempty"`
+	OrgName          string        `json:"org_name,omitempty"`
+	VisibleTo        string        `json:"visible_to,omitempty"`
+	Picture          interface{}   `json:"picture,omitempty"`
+	AdditionalEmails []interface{} `json:"additional_emails,omitempty"`
+}
+
+//FindPersonsResponse Describes the response from get_persons_find by name or email
+type FindPersonsResponse struct {
+	Success        bool               `json:"success"`
+	Data           []FindPersonResult `json:"data"`
+	AdditionalData AdditionalData     `json:"additional_data"`
+}
+
 // FindByEmail Searches all persons by their Email
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_find
-func (s *PersonsService) FindByEmail(ctx context.Context, email string) (*DataResponse, *Response, error) {
+func (s *PersonsService) FindByEmail(ctx context.Context, email string) (*FindPersonsResponse, *Response, error) {
 	req, err := s.client.NewRequest(http.MethodGet, "/persons/find", struct {
 		Term          string `url:"term"`
 		SearchByEmail int    `url:"search_by_email"`
@@ -326,7 +346,7 @@ func (s *PersonsService) FindByEmail(ctx context.Context, email string) (*DataRe
 		return nil, nil, err
 	}
 
-	var record *DataResponse
+	var record *FindPersonsResponse
 
 	resp, err := s.client.Do(ctx, req, &record)
 
