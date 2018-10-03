@@ -73,7 +73,7 @@ type Deal struct {
 	NextActivityNote         interface{} `json:"next_activity_note,omitempty"`
 	FormattedValue           string      `json:"formatted_value,omitempty"`
 	RottenTime               interface{} `json:"rotten_time,omitempty"`
-	WeightedValue            int         `json:"weighted_value,omitempty"`
+	WeightedValue            float64     `json:"weighted_value,omitempty"`
 	FormattedWeightedValue   string      `json:"formatted_weighted_value,omitempty"`
 	OwnerName                string      `json:"owner_name,omitempty"`
 	CcEmail                  string      `json:"cc_email,omitempty"`
