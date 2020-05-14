@@ -144,11 +144,16 @@ func (s *DealService) Find(ctx context.Context, term string) (*DataResponse, *Re
 	return record, resp, nil
 }
 
-// List all deals.
+type FilterOptions struct {
+	FilterID int    `url:"filter_id"`
+	Status   string `url:"status"` // e.g. "all_not_deleted"
+}
+
+// List deals.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals
-func (s *DealService) List(ctx context.Context) (*DataResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/deals", nil, nil)
+func (s *DealService) List(ctx context.Context, opt *FilterOptions) (*DataResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/deals", opt, nil)
 
 	if err != nil {
 		return nil, nil, err
@@ -210,16 +215,18 @@ func (s *DealService) Merge(ctx context.Context, id int, opt *DealsMergeOptions)
 // DealsUpdateOptions specifices the optional parameters to the
 // DealService.Update method.
 type DealsUpdateOptions struct {
-	Title          string `url:"title,omitempty"`
-	Value          string `url:"value,omitempty"`
-	Currency       string `url:"currency,omitempty"`
-	UserID         uint   `url:"user_id,omitempty"`
-	PersonID       uint   `url:"person_id,omitempty"`
-	OrganizationID uint   `url:"org_id,omitempty"`
-	StageID        uint   `url:"stage_id,omitempty"`
-	Status         string `url:"status,omitempty"`
-	LostReason     string `url:"lost_reason,omitempty"`
-	VisibleTo      uint   `url:"visible_to,omitempty"`
+	Title               string `json:"title,omitempty"`
+	Value               string `json:"value,omitempty"`
+	Currency            string `json:"currency,omitempty"`
+	UserID              uint   `json:"user_id,omitempty"`
+	PersonID            uint   `json:"person_id,omitempty"`
+	OrganizationID      uint   `json:"org_id,omitempty"`
+	StageID             uint   `json:"stage_id,omitempty"`
+	Status              string `json:"status,omitempty"`
+	LostReason          string `json:"lost_reason,omitempty"`
+	VisibleTo           uint   `json:"visible_to,omitempty"`
+	RequirementAnalysis string `json:"56d3d40c37c0db60fff576ae73ba2fea0d58dc09,omitempty"`
+	TemporaryLink       string `json:"4fe88fad67d8dcbc17d18d9ee1faac55122249fd,omitempty"`
 }
 
 // Update a deal.
