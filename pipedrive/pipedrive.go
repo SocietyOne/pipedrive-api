@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	defaultBaseUrl = "api.pipedrive.com/"
+	DefaultBaseURL = "https://api.pipedrive.com"
 
 	libraryVersion = "1"
 
