@@ -2,6 +2,7 @@ package pipedrive
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 const (
@@ -45,10 +46,10 @@ type AdditionalData struct {
 }
 
 type DataResponse struct {
-	Success        bool            `json:"success,omitempty"`
-	Data           json.RawMessage `json:"data,omitempty"`
-	AdditionalData AdditionalData  `json:"additional_data,omitempty"`
-	RelatedObjects interface{}     `json:"related_objects,omitempty"`
+	Success bool   `json:"success,omitempty"`
+	Data    []byte `json:"data,omitempty"`
+	// AdditionalData AdditionalData  `json:"additional_data,omitempty"`
+	// RelatedObjects interface{}     `json:"related_objects,omitempty"`
 }
 
 type DeleteMultipleOptions struct {
@@ -136,4 +137,28 @@ const (
 // Search
 type SearchOptions struct {
 	Term string `url:"term,omitempty"`
+}
+
+type OrgID struct {
+	// Settable Fields
+	ID int `json:"value,omitempty"`
+
+	// Unsettable Fields
+	OwnerID     int    `json:"owner_id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	PeopleCount int    `json:"people_count,omitempty"`
+	Address     string `json:"address,omitempty"`
+	IsActive    bool   `json:"active_flag,omitempty"`
+	CCEmail     string `json:"cc_email,omitempty"`
+}
+
+//MarshalJSON is a Marshalling override
+func (o *OrgID) MarshalJSON() ([]byte, error) {
+	format := fmt.Sprintf("\"%d\"", o.ID)
+	return []byte(format), nil
+}
+
+//UnmarshalJSON is an unmarshalling override
+func (o *OrgID) UnmarshalJSON(b []byte) error {
+	return json.Unmarshal(b, o)
 }

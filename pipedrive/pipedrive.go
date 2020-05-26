@@ -51,32 +51,32 @@ type Client struct {
 	// Reuse a single struct instead of allocating one for each service.
 	common service
 
-	Deals             *DealService
-	Currencies        *CurrenciesService
-	NoteFields        *NoteFieldsService
-	Notes             *NotesService
-	Recents           *RecentsService
-	SearchResults     *SearchResultsService
-	Users             *UsersService
-	Filters           *FiltersService
-	Activities        *ActivitiesService
-	ActivityFields    *ActivityFieldsService
-	ActivityTypes     *ActivityTypesService
-	Authorizations    *AuthorizationsService
-	Stages            *StagesService
-	Webhooks          *WebhooksService
-	UserConnections   *UserConnectionsService
-	GoalsService      *GoalsService
-	PipelinesService  *PipelinesService
-	UserSettings      *UserSettingsService
-	Files             *FilesService
-	ProductFields     *ProductFieldsService
-	Products          *ProductsService
-	PersonFields      *PersonFieldsService
-	OrganizationField *OrganizationFieldsService
-	DealFields        *DealFieldsService
-	Persons           *PersonsService
-	Organizations     *OrganizationsService
+	// Deals             *DealService
+	// Currencies        *CurrenciesService
+	// NoteFields        *NoteFieldsService
+	// Notes             *NotesService
+	// Recents           *RecentsService
+	// SearchResults     *SearchResultsService
+	// Users             *UsersService
+	// Filters           *FiltersService
+	// Activities        *ActivitiesService
+	// ActivityFields    *ActivityFieldsService
+	// ActivityTypes     *ActivityTypesService
+	// Authorizations    *AuthorizationsService
+	// Stages            *StagesService
+	// Webhooks          *WebhooksService
+	// UserConnections   *UserConnectionsService
+	// GoalsService      *GoalsService
+	// PipelinesService  *PipelinesService
+	// UserSettings      *UserSettingsService
+	// Files             *FilesService
+	// ProductFields     *ProductFieldsService
+	// Products          *ProductsService
+	// PersonFields      *PersonFieldsService
+	// OrganizationField *OrganizationFieldsService
+	// DealFields        *DealFieldsService
+	// Persons           *PersonsService
+	// Organizations     *OrganizationsService
 }
 
 type service struct {
@@ -222,7 +222,6 @@ func (c *Client) Do(ctx context.Context, request *http.Request, v interface{}) (
 	}
 
 	resp, err := c.client.Do(request)
-
 	if err != nil {
 		select {
 		case <-ctx.Done():
@@ -245,18 +244,19 @@ func (c *Client) Do(ctx context.Context, request *http.Request, v interface{}) (
 	c.rateMutex.Unlock()
 
 	err = c.checkResponse(response.Response)
-
 	if err != nil {
 		return response, err
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(v)
-
-	if err == io.EOF {
-		return response, nil
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return response, err
 	}
 
-	return response, nil
+	fmt.Println(string(body))
+
+	err = json.Unmarshal(body, v)
+	return response, err
 }
 
 func (c *Client) createRequestUrl(path string, opt interface{}) (string, error) {
@@ -302,6 +302,13 @@ func (c *Client) SetOptions(options ...func(*Client) error) error {
 	return nil
 }
 
+func NewConfig(apiKey string) *Config {
+	return &Config{
+		APIKey:  apiKey,
+		BaseURL: DefaultBaseURL,
+	}
+}
+
 func NewClient(options *Config) *Client {
 	baseURL, _ := url.Parse(options.BaseURL + "/")
 
@@ -311,34 +318,34 @@ func NewClient(options *Config) *Client {
 		apiKey:  options.APIKey,
 	}
 
-	c.common.client = c
+	// c.common.client = c
 
-	c.Deals = (*DealService)(&c.common)
-	c.Currencies = (*CurrenciesService)(&c.common)
-	c.NoteFields = (*NoteFieldsService)(&c.common)
-	c.Notes = (*NotesService)(&c.common)
-	c.Recents = (*RecentsService)(&c.common)
-	c.SearchResults = (*SearchResultsService)(&c.common)
-	c.Users = (*UsersService)(&c.common)
-	c.Filters = (*FiltersService)(&c.common)
-	c.Activities = (*ActivitiesService)(&c.common)
-	c.ActivityFields = (*ActivityFieldsService)(&c.common)
-	c.ActivityTypes = (*ActivityTypesService)(&c.common)
-	c.Authorizations = (*AuthorizationsService)(&c.common)
-	c.Stages = (*StagesService)(&c.common)
-	c.Webhooks = (*WebhooksService)(&c.common)
-	c.UserConnections = (*UserConnectionsService)(&c.common)
-	c.GoalsService = (*GoalsService)(&c.common)
-	c.PipelinesService = (*PipelinesService)(&c.common)
-	c.UserSettings = (*UserSettingsService)(&c.common)
-	c.Files = (*FilesService)(&c.common)
-	c.ProductFields = (*ProductFieldsService)(&c.common)
-	c.Products = (*ProductsService)(&c.common)
-	c.PersonFields = (*PersonFieldsService)(&c.common)
-	c.OrganizationField = (*OrganizationFieldsService)(&c.common)
-	c.DealFields = (*DealFieldsService)(&c.common)
-	c.Persons = (*PersonsService)(&c.common)
-	c.Organizations = (*OrganizationsService)(&c.common)
+	// c.Deals = (*DealService)(&c.common)
+	// c.Currencies = (*CurrenciesService)(&c.common)
+	// c.NoteFields = (*NoteFieldsService)(&c.common)
+	// c.Notes = (*NotesService)(&c.common)
+	// c.Recents = (*RecentsService)(&c.common)
+	// c.SearchResults = (*SearchResultsService)(&c.common)
+	// c.Users = (*UsersService)(&c.common)
+	// c.Filters = (*FiltersService)(&c.common)
+	// c.Activities = (*ActivitiesService)(&c.common)
+	// c.ActivityFields = (*ActivityFieldsService)(&c.common)
+	// c.ActivityTypes = (*ActivityTypesService)(&c.common)
+	// c.Authorizations = (*AuthorizationsService)(&c.common)
+	// c.Stages = (*StagesService)(&c.common)
+	// c.Webhooks = (*WebhooksService)(&c.common)
+	// c.UserConnections = (*UserConnectionsService)(&c.common)
+	// c.GoalsService = (*GoalsService)(&c.common)
+	// c.PipelinesService = (*PipelinesService)(&c.common)
+	// c.UserSettings = (*UserSettingsService)(&c.common)
+	// c.Files = (*FilesService)(&c.common)
+	// c.ProductFields = (*ProductFieldsService)(&c.common)
+	// c.Products = (*ProductsService)(&c.common)
+	// c.PersonFields = (*PersonFieldsService)(&c.common)
+	// c.OrganizationField = (*OrganizationFieldsService)(&c.common)
+	// c.DealFields = (*DealFieldsService)(&c.common)
+	// c.Persons = (*PersonsService)(&c.common)
+	// c.Organizations = (*OrganizationsService)(&c.common)
 
 	return c
 }
