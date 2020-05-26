@@ -1,7 +1,6 @@
 package pipedrive
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
@@ -46,8 +45,8 @@ type AdditionalData struct {
 }
 
 type DataResponse struct {
-	Success bool   `json:"success,omitempty"`
-	Data    []byte `json:"data,omitempty"`
+	Success bool        `json:"success,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 	// AdditionalData AdditionalData  `json:"additional_data,omitempty"`
 	// RelatedObjects interface{}     `json:"related_objects,omitempty"`
 }
@@ -156,9 +155,4 @@ type OrgID struct {
 func (o *OrgID) MarshalJSON() ([]byte, error) {
 	format := fmt.Sprintf("\"%d\"", o.ID)
 	return []byte(format), nil
-}
-
-//UnmarshalJSON is an unmarshalling override
-func (o *OrgID) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, o)
 }

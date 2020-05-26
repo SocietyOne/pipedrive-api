@@ -2,7 +2,6 @@ package test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"reflect"
@@ -18,7 +17,7 @@ type TestDealObject struct {
 
 type TestPerson struct {
 	pipedrive.BasePersonObject
-	FName *string `json:"first_name,omitempty"`
+	FirstChar *string `json:"first_char,omitempty"`
 }
 
 //MarshalJSON is a Marshalling override
@@ -26,10 +25,10 @@ type TestPerson struct {
 // 	return json.Marshal(o)
 // }
 
-//UnmarshalJSON is an unmarshalling override
-func (o *TestPerson) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, o)
-}
+// //UnmarshalJSON is an unmarshalling override
+// func (o *TestPerson) UnmarshalJSON(b []byte) error {
+// 	return json.Unmarshal(b, o)
+// }
 
 func TestPersons(t *testing.T) {
 
@@ -37,37 +36,27 @@ func TestPersons(t *testing.T) {
 	client := pipedrive.NewClient(pipedrive.NewConfig(apiKey))
 
 	personName := "test1"
-	randomFirstName := "abcabc"
-	personToCreate := TestPerson{
+	randomChar := "a"
+	personToCreate := &TestPerson{
 		BasePersonObject: pipedrive.BasePersonObject{
 			Name: &personName,
-			// OrgID: &pipedrive.OrgID{
-			// 	ID: 1,
-			// },
+			OrgID: &pipedrive.OrgID{
+				ID: 1,
+			},
 		},
-		FName: &randomFirstName,
+		FirstChar: &randomChar,
 	}
-
-	// PrintType(personToCreate)
-
-	// personToCreate := pipedrive.BasePersonObject{
-	// 	Name: &personName,
-	// 	// OrgID: &pipedrive.OrgID{
-	// 	// 	ID: 1,
-	// 	// },
-	// }
-
-	createdPerson, err := client.CreatePerson(context.Background(), personToCreate)
+	createdPerson := &TestPerson{}
+	err := client.CreatePerson(context.Background(), personToCreate, createdPerson)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	person := *createdPerson
-	// testPerson := person.(TestPerson)
-
 	fmt.Println(person)
 
-	// getPerson, err := client.GetPerson(context.Background(), createdPerson.ID)
+	// persons := []*TestPerson{}
+	// err = client.ListPersons(context.Background(), nil, persons)
 }
 
 func PrintType(in pipedrive.Person) {

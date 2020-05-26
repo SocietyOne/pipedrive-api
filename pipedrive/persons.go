@@ -28,7 +28,7 @@ type Phone struct {
 type Person interface {
 	// APIName() string
 	// MarshalJSON() ([]byte, error)
-	UnmarshalJSON([]byte) error
+	// UnmarshalJSON([]byte) error
 }
 
 type BasePersonObject struct {
@@ -36,12 +36,12 @@ type BasePersonObject struct {
 	ID int `json:"id,omitempty" force:"id,omitempty"`
 
 	// Settable Fields
-	Name      *string `json:"name,omitempty" force:"name,omitempty"`             // Required
-	FirstName *string `json:"first_name,omitempty" force:"first_name,omitempty"` // Optional
-	LastName  *string `json:"last_name,omitempty" force:"last_name,omitempty"`   // Optional
-	// Phone     []*Phone `json:"phone,omitempty" force:"phone,omitempty"`
-	// Email     []*Email `json:"email,omitempty" force:"email,omitempty"`
-	// OrgID     *OrgID   `json:"org_id,omitempty"`
+	Name      *string  `json:"name,omitempty" force:"name,omitempty"`             // Required
+	FirstName *string  `json:"first_name,omitempty" force:"first_name,omitempty"` // Optional
+	LastName  *string  `json:"last_name,omitempty" force:"last_name,omitempty"`   // Optional
+	Phone     []*Phone `json:"phone,omitempty" force:"phone,omitempty"`
+	Email     []*Email `json:"email,omitempty" force:"email,omitempty"`
+	OrgID     *OrgID   `json:"org_id,omitempty"`
 
 	// Unused Fields
 	// OwnerID                         interface{} `json:"owner_id,omitempty"`
@@ -110,24 +110,26 @@ type PersonResponse struct {
 // CreatePerson create a new person.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/post_persons
-func (c *Client) CreatePerson(ctx context.Context, person Person) (*Person, error) {
+func (c *Client) CreatePerson(ctx context.Context, person Person, out Person) error {
 
 	req, err := c.NewRequest(http.MethodPost, "/persons", nil, person)
 	// req, err := c.NewRequest(http.MethodPost, "/persons", nil, person.(interface{}))
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var personResponse *PersonResponse
+	personResponse := &DataResponse{
+		Data: out,
+	}
 
-	_, err = c.Do(ctx, req, &personResponse)
+	_, err = c.Do(ctx, req, personResponse)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return personResponse.Data, nil
+	return nil
 	// return person, nil
 }
 
@@ -234,20 +236,22 @@ func (c *Client) GetPerson(ctx context.Context, id int) (*Person, error) {
 // ListPersons list all persons based on a filter
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons
-func (c *Client) ListPersons(ctx context.Context, opt *FilterOptions) ([]*Person, error) {
+func (c *Client) ListPersons(ctx context.Context, opt *FilterOptions, out []*Person) error {
 	req, err := c.NewRequest(http.MethodGet, "/persons", opt, nil)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var personsResponse *PersonsResponse
+	personsResponse := &DataResponse{
+		Data: out,
+	}
 
 	_, err = c.Do(ctx, req, &personsResponse)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return personsResponse.Data, nil
+	return nil
 }

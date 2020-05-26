@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -214,7 +215,7 @@ func (c *Client) checkResponse(r *http.Response) error {
 //
 // The provided ctx must be non-nil. If it is canceled or times out,
 // ctx.Err() will be returned.
-func (c *Client) Do(ctx context.Context, request *http.Request, v interface{}) (*Response, error) {
+func (c *Client) Do(ctx context.Context, request *http.Request, out interface{}) (*Response, error) {
 	if err := c.checkRateLimitBeforeDo(request); err != nil {
 		return &Response{
 			Response: err.Response,
@@ -248,15 +249,22 @@ func (c *Client) Do(ctx context.Context, request *http.Request, v interface{}) (
 		return response, err
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return response, err
 	}
 
-	fmt.Println(string(body))
+	fmt.Println(string(respBytes))
 
-	err = json.Unmarshal(body, v)
-	return response, err
+	if out != nil {
+		err = json.Unmarshal(respBytes, out)
+		if err != nil {
+			return response, err
+		}
+
+		return response, nil
+	}
+	return response, errors.New("Expected output struct 'out' is not provided")
 }
 
 func (c *Client) createRequestUrl(path string, opt interface{}) (string, error) {
