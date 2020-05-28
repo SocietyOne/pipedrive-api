@@ -12,12 +12,14 @@ import (
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons
 type PersonsService service
 
+// Email field struct
 type Email struct {
 	Label   string `json:"label"`
 	Value   string `json:"value"`
 	Primary bool   `json:"primary"`
 }
 
+// Phone field struct
 type Phone struct {
 	Label   string `json:"label"`
 	Value   string `json:"value"`
@@ -25,12 +27,11 @@ type Phone struct {
 }
 
 // Person represents a Pipedrive person.
+// Should embed BasePersonObject
 type Person interface {
-	// APIName() string
-	// MarshalJSON() ([]byte, error)
-	// UnmarshalJSON([]byte) error
 }
 
+// BasePersonObject represents a basic pipedrive person
 type BasePersonObject struct {
 	// Unsettable Fields
 	ID int `json:"id,omitempty" force:"id,omitempty"`
@@ -84,173 +85,138 @@ type BasePersonObject struct {
 	// CcEmail                         string      `json:"cc_email,omitempty"`
 }
 
-func (p BasePersonObject) APIName() string {
-	return "deals"
-}
-
-func (p BasePersonObject) String() string {
-	return Stringify(p)
-}
-
-// PersonsResponse represents multiple persons response.
-type PersonsResponse struct {
-	Success        bool            `json:"success"`
-	Data           []*Person       `json:"data"`
-	AdditionalData *AdditionalData `json:"additional_data,omitempty"`
-}
-
-// PersonResponse represents single person response.
-type PersonResponse struct {
-	Success        bool            `json:"success"`
-	Data           *Person         `json:"data"`
-	AdditionalData *AdditionalData `json:"additional_data,omitempty"`
-	// related objects
-}
-
 // CreatePerson create a new person.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/post_persons
-func (c *Client) CreatePerson(ctx context.Context, person Person, out Person) error {
+func (c *Client) CreatePerson(ctx context.Context, person Person, out ResponseModel) error {
 
 	req, err := c.NewRequest(http.MethodPost, "/persons", nil, person)
-	// req, err := c.NewRequest(http.MethodPost, "/persons", nil, person.(interface{}))
-
 	if err != nil {
 		return err
 	}
 
-	personResponse := &DataResponse{
-		Data: out,
-	}
-
-	_, err = c.Do(ctx, req, personResponse)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
 		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
 	}
 
 	return nil
-	// return person, nil
 }
 
 // UpdatePerson update a specific person.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/put_persons_id
-func (c *Client) UpdatePerson(ctx context.Context, id int, person Person) (*Person, error) {
+func (c *Client) UpdatePerson(ctx context.Context, id int, person Person, out ResponseModel) error {
+
 	uri := fmt.Sprintf("/persons/%v", id)
 	req, err := c.NewRequest(http.MethodPut, uri, nil, person)
-
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var personResponse *PersonResponse
-
-	_, err = c.Do(ctx, req, &personResponse)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return personResponse.Data, nil
+	return nil
 }
 
 // DeletePerson marks person as deleted.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/delete_persons_id
-func (c *Client) DeletePerson(ctx context.Context, id int) (*Response, error) {
+func (c *Client) DeletePerson(ctx context.Context, id int) error {
+
 	uri := fmt.Sprintf("/persons/%v", id)
 	req, err := c.NewRequest(http.MethodDelete, uri, nil, nil)
-
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return c.Do(ctx, req, nil)
+	out := &BaseResponse{}
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
+	}
+	return nil
 }
 
-// DeleteMultiplePersons marks multiple persons as deleted.
+// DeletePersons marks multiple persons as deleted.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/delete_persons
-func (c *Client) DeleteMultiplePersons(ctx context.Context, ids []int) (*Response, error) {
+func (c *Client) DeletePersons(ctx context.Context, ids []int) error {
 	req, err := c.NewRequest(http.MethodDelete, "/persons", &DeleteMultipleOptions{
 		Ids: arrayToString(ids, ","),
 	}, nil)
-
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return c.Do(ctx, req, nil)
+	out := &BaseResponse{}
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString()) // As of writing this, endpoint may not report errors correctly
+	}
+
+	return nil
 }
 
-// // FindByEmail Searches all persons by their Email
-// //
-// // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_find
-// func (c *Client) FindPersonsByEmail(ctx context.Context, email string) (*FindPersonsResponse, *Response, error) {
-// 	req, err := c.NewRequest(http.MethodGet, "/persons/find", struct {
-// 		Term          string `url:"term"`
-// 		SearchByEmail int    `url:"search_by_email"`
-// 	}{
-// 		email,
-// 		1,
-// 	}, nil)
+// SearchPersonsOptions is used to configure a search request. Term is required
+type SearchPersonsOptions struct {
+	Term           string  `url:"term"`                      // The search term to look for. Minimum 2 characters (or 1 if using exact_match). (REQUIRED)
+	Fields         *string `url:"fields,omitempty"`          // A comma-separated string array. The fields to perform the search from. Defaults to all of them.
+	ExactMatch     *bool   `url:"status,omitempty"`          // When enabled, only full exact matches against the given term are returned. It is not case sensitive.
+	OrganizationID *int    `url:"organization_id,omitempty"` // Will filter Deals by the provided Organization ID. The upper limit of found Deals associated with the Organization is 2000.
+	IncludeFields  *string `url:"include_fields,omitempty"`  // Supports including optional fields in the results which are not provided by default.
+	Start          *int    `url:"start,omitempty"`           // Pagination start.
+	Limit          *int    `url:"limit,omitempty"`           // Items shown per page
+}
 
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
+// SearchPersons Searches all persons
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_search
+func (c *Client) SearchPersons(ctx context.Context, opt *SearchPersonsOptions, out ResponseModel) error {
+	req, err := c.NewRequest(http.MethodGet, "/persons/search", opt, nil)
+	if err != nil {
+		return err
+	}
 
-// 	var personResponse *FindPersonsResponse
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
+	}
 
-// 	_, err = c.Do(ctx, req, &personResponse)
-
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-
-// 	return nil, personResponse.Data, nil
-// }
+	return nil
+}
 
 //GetPerson returns a person by their id
 //
 //Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_id
-func (c *Client) GetPerson(ctx context.Context, id int) (*Person, error) {
+func (c *Client) GetPerson(ctx context.Context, id int, out ResponseModel) error {
 	uri := fmt.Sprintf("/persons/%v", id)
 	req, err := c.NewRequest(http.MethodGet, uri, nil, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var personResponse *PersonResponse
-
-	_, err = c.Do(ctx, req, &personResponse)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return personResponse.Data, nil
-}
-
-// ListPersons list all persons based on a filter
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons
-func (c *Client) ListPersons(ctx context.Context, opt *FilterOptions, out []*Person) error {
-	req, err := c.NewRequest(http.MethodGet, "/persons", opt, nil)
-
 	if err != nil {
 		return err
 	}
 
-	personsResponse := &DataResponse{
-		Data: out,
-	}
-
-	_, err = c.Do(ctx, req, &personsResponse)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
 		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
 	}
 
 	return nil

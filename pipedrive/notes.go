@@ -10,17 +10,9 @@ import (
 
 // Note represents a Pipedrive note.
 type Note interface {
-	APIName() string
 }
 
-func (n BaseNoteObject) APIName() string {
-	return "note"
-}
-
-func (n BaseNoteObject) String() string {
-	return Stringify(n)
-}
-
+// BaseNoteObject represents a basic pipedrive note
 type BaseNoteObject struct {
 	// Unsettable Fields
 	ID         int       `json:"id,omitempty"`
@@ -42,116 +34,86 @@ type BaseNoteObject struct {
 	// LastUpdateUserID         int       `json:"last_update_user_id,omitempty"`
 }
 
-// NotesResponse represents multiple notes response.
-type NotesResponse struct {
-	Success        bool           `json:"success,omitempty"`
-	Data           []*Note        `json:"data,omitempty"`
-	AdditionalData AdditionalData `json:"additional_data,omitempty"`
-}
-
-// NoteResponse represents a single note response.
-type NoteResponse struct {
-	Success bool  `json:"success,omitempty"`
-	Data    *Note `json:"data,omitempty"`
-}
-
 // CreateNote creates a note.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Notes/get_notes_id
-func (c *Client) CreateNote(ctx context.Context, note *Note) (*Note, error) {
+func (c *Client) CreateNote(ctx context.Context, note Note, out ResponseModel) error {
+
 	req, err := c.NewRequest(http.MethodPost, "/notes", nil, note)
-
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var noteResp *NoteResponse
-
-	_, err = c.Do(ctx, req, &noteResp)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
 	}
 
-	return noteResp.Data, nil
-}
-
-// GetNote returns a specific note by id.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Notes/get_notes_id
-func (c *Client) GetNote(ctx context.Context, id int) (*Note, error) {
-	uri := fmt.Sprintf("/notes/%v", id)
-	req, err := c.NewRequest(http.MethodGet, uri, nil, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var noteResp *NoteResponse
-
-	_, err = c.Do(ctx, req, &noteResp)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return noteResp.Data, nil
+	return nil
 }
 
 // UpdateNote updates a specific note.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Notes/put_notes_id
-func (c *Client) UpdateNote(ctx context.Context, id int, note *Note) (*Note, error) {
+func (c *Client) UpdateNote(ctx context.Context, id int, note Note, out ResponseModel) error {
+
 	uri := fmt.Sprintf("/notes/%v", id)
 	req, err := c.NewRequest(http.MethodPut, uri, nil, note)
-
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var noteResp *NoteResponse
-
-	_, err = c.Do(ctx, req, &noteResp)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return noteResp.Data, nil
+	return nil
 }
 
 // DeleteNote marks note as deleted.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Notes/delete_notes_id
 func (c *Client) DeleteNote(ctx context.Context, id int) error {
+
 	uri := fmt.Sprintf("/notes/%v", id)
 	req, err := c.NewRequest(http.MethodDelete, uri, nil, nil)
-
 	if err != nil {
 		return err
 	}
 
-	_, err = c.Do(ctx, req, nil)
-	return err
+	out := &BaseResponse{}
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
+	}
+	return nil
 }
 
-// ListNotes returns notes.
+// GetNote returns a specific note by id.
 //
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Notes/get_notes
-func (c *Client) ListNotes(ctx context.Context) ([]*Note, error) {
-	req, err := c.NewRequest(http.MethodGet, "/notes", nil, nil)
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Notes/get_notes_id
+func (c *Client) GetNote(ctx context.Context, id int, out ResponseModel) error {
 
+	uri := fmt.Sprintf("/notes/%v", id)
+	req, err := c.NewRequest(http.MethodGet, uri, nil, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var notesResp *NotesResponse
-
-	_, err = c.Do(ctx, req, &notesResp)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
 	}
 
-	return notesResp.Data, nil
+	return nil
 }

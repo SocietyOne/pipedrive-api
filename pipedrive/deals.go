@@ -19,11 +19,12 @@ const (
 
 //go:generate moq -out mock_deal.go . Deal
 
+// Deal represents a Pipedrive deal.
+// Should embed BasePersonObject
 type Deal interface {
-	APIName() string
 }
 
-// Deal represents a Pipedrive deal.
+// BaseDealObject represents a basic Pipedrive deal.
 type BaseDealObject struct {
 	// Unsettable Fields
 	ID         int    `json:"id,omitempty"`
@@ -88,66 +89,62 @@ type BaseDealObject struct {
 	// PersonHidden           bool        `json:"person_hidden,omitempty"`
 }
 
-func (d BaseDealObject) APIName() string {
-	return "deals"
-}
-
-func (d BaseDealObject) String() string {
-	return Stringify(d)
-}
-
-// DealsResponse represents multiple deals response.
-type DealsResponse struct {
-	Success        bool            `json:"success,omitempty"`
-	Data           []*Deal         `json:"data,omitempty"`
-	AdditionalData *AdditionalData `json:"additional_data,omitempty"`
-}
-
-// DealResponse represents single deal response.
-type DealResponse struct {
-	Success        bool            `json:"success,omitempty"`
-	Data           *Deal           `json:"data,omitempty"`
-	AdditionalData *AdditionalData `json:"additional_data,omitempty"`
-}
-
 // CreateDeal creates a deal.
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/post_deals
-func (c *Client) CreateDeal(ctx context.Context, deal Deal) (*Deal, error) {
-	uri := fmt.Sprintf("/deals")
-	req, err := c.NewRequest(http.MethodPost, uri, nil, deal)
+func (c *Client) CreateDeal(ctx context.Context, deal Deal, out ResponseModel) error {
 
+	req, err := c.NewRequest(http.MethodPost, "/deals", nil, deal)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var dealResp *DealResponse
-
-	_, err = c.Do(ctx, req, &dealResp)
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
 	}
 
-	return dealResp.Data, nil
+	return nil
 }
 
 // UpdateDeal updates a deal.
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/put_deals_id
-func (c *Client) UpdateDeal(ctx context.Context, id int, deal Deal) (*Deal, error) {
+func (c *Client) UpdateDeal(ctx context.Context, id int, deal Deal, out ResponseModel) error {
 	uri := fmt.Sprintf("/deals/%v", id)
 	req, err := c.NewRequest(http.MethodPut, uri, nil, deal)
-
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var dealResponse *DealResponse
-
-	_, err = c.Do(ctx, req, &dealResponse)
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return dealResponse.Data, nil
+	return nil
+}
+
+// DeleteDeal deletes a deal.
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/delete_deals_id
+func (c *Client) DeleteDeal(ctx context.Context, id int) error {
+	uri := fmt.Sprintf("/deals/%v", id)
+	req, err := c.NewRequest(http.MethodDelete, uri, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	out := &BaseResponse{}
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
+	}
+	return nil
 }
 
 // DeleteDeals deletes deals in bulk.
@@ -161,87 +158,95 @@ func (c *Client) DeleteDeals(ctx context.Context, ids []int) error {
 		return err
 	}
 
-	_, err = c.Do(ctx, req, nil)
-	return err
+	out := &BaseResponse{}
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString()) // As of writing this, endpoint may not report errors correctly
+	}
+
+	return nil
 }
 
-// DeleteDeal deletes a deal.
+// SearchDealsOptions is used to configure a search request. Term is required
+type SearchDealsOptions struct {
+	Term           string  `url:"term"`                      // The search term to look for. Minimum 2 characters (or 1 if using exact_match). (REQUIRED)
+	Fields         *string `url:"fields,omitempty"`          // A comma-separated string array. The fields to perform the search from. Defaults to all of them.
+	ExactMatch     *bool   `url:"status,omitempty"`          // When enabled, only full exact matches against the given term are returned. It is not case sensitive.
+	PersonID       *int    `url:"person_id,omitempty"`       // Will filter Deals by the provided Person ID. The upper limit of found Deals associated with the Person is 2000.
+	OrganizationID *int    `url:"organization_id,omitempty"` // Will filter Deals by the provided Organization ID. The upper limit of found Deals associated with the Organization is 2000.
+	IncludeFields  *string `url:"include_fields,omitempty"`  // Supports including optional fields in the results which are not provided by default.
+	Start          *int    `url:"start,omitempty"`           // Pagination start.
+	Limit          *int    `url:"limit,omitempty"`           // Items shown per page
+}
+
+// SearchDeals searches all deals
 //
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/delete_deals_id
-func (c *Client) DeleteDeal(ctx context.Context, id int) error {
-	uri := fmt.Sprintf("/deals/%v", id)
-	req, err := c.NewRequest(http.MethodDelete, uri, nil, nil)
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals_search
+func (c *Client) SearchDeals(ctx context.Context, opt *SearchDealsOptions, out ResponseModel) error {
+	req, err := c.NewRequest(http.MethodGet, "/deals/search", opt, nil)
 	if err != nil {
 		return err
 	}
 
-	_, err = c.Do(ctx, req, nil)
-	return err
-}
-
-// FindDeals by name.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals_find
-// func (c *Client) FindDeals(ctx context.Context, term string) ([]*Deal, error) {
-// 	req, err := c.NewRequest(http.MethodGet, "/deals/find", &SearchOptions{
-// 		Term: term,
-// 	}, nil)
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	var dealResp *DealsResponse
-
-// 	_, err = c.Do(ctx, req, &dealResp)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return dealResp.Data, nil
-// }
-
-type FilterOptions struct {
-	FilterID int    `url:"filter_id"`
-	Status   string `url:"status"` // e.g. "all_not_deleted"
-}
-
-// ListDeals lists deals.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals
-func (c *Client) ListDeals(ctx context.Context, opt *FilterOptions) ([]*Deal, error) {
-	req, err := c.NewRequest(http.MethodGet, "/deals", opt, nil)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
 	}
 
-	var dealsResp *DealsResponse
+	return nil
+}
 
-	_, err = c.Do(ctx, req, &dealsResp)
+// ListDealOptions is used to configure a list deals request. PersonID is required
+type ListDealOptions struct {
+	PersonID string  `url:"id"`               // ID of a person (REQUIRED)
+	Status   *string `url:"status,omitempty"` // Only fetch deals with specific status. If omitted, all not deleted deals are fetched
+	Start    *int    `url:"start,omitempty"`  // Pagination start
+	Limit    *int    `url:"limit,omitempty"`  // Items shown per page
+	Sort     *string `url:"sort,omitempty"`   // Field names and sorting mode separated by a comma (field_name_1 ASC, field_name_2 DESC). Only first-level field keys are supported (no nested keys)
+}
 
+// ListDeals lists deals belonging to a person
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_id_deals
+func (c *Client) ListDeals(ctx context.Context, personID int, opt *ListDealOptions, out ResponseModel) error {
+	uri := fmt.Sprintf("/persons/%v/deals", personID)
+	req, err := c.NewRequest(http.MethodGet, uri, opt, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return dealsResp.Data, nil
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
+	}
+
+	return nil
 }
 
 // GetDeal gets a deal by ID
-func (c *Client) GetDeal(ctx context.Context, id int) (*Deal, error) {
+func (c *Client) GetDeal(ctx context.Context, id int, out ResponseModel) error {
 	uri := fmt.Sprintf("/deals/%v", id)
 	req, err := c.NewRequest(http.MethodGet, uri, nil, nil)
-
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var dealResp *DealResponse
-
-	_, err = c.Do(ctx, req, &dealResp)
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
 	}
 
-	return dealResp.Data, nil
+	return nil
 }

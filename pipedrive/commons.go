@@ -44,11 +44,29 @@ type AdditionalData struct {
 	Pagination          Pagination `json:"pagination"`
 }
 
-type DataResponse struct {
-	Success bool        `json:"success,omitempty"`
-	Data    interface{} `json:"data,omitempty"`
+// ResponseModel is the response model
+// Should use the BaseResponse with expected struct as BaseResponse.Data.
+type ResponseModel interface {
+	Successful() bool
+	ErrorString() string
+}
+
+// BaseResponse is the base response model
+type BaseResponse struct {
+	Success   bool        `json:"success,omitempty"`
+	Data      interface{} `json:"data,omitempty"`
+	Error     string      `json:"error,omitempty"`
+	ErrorInfo string      `json:"error_info,omitempty"`
 	// AdditionalData AdditionalData  `json:"additional_data,omitempty"`
 	// RelatedObjects interface{}     `json:"related_objects,omitempty"`
+}
+
+func (b *BaseResponse) Successful() bool {
+	return b.Success
+}
+
+func (b *BaseResponse) ErrorString() string {
+	return b.Error
 }
 
 type DeleteMultipleOptions struct {
