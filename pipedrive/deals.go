@@ -204,11 +204,10 @@ func (c *Client) SearchDeals(ctx context.Context, opt *SearchDealsOptions, out R
 
 // ListDealOptions is used to configure a list deals request. PersonID is required
 type ListDealOptions struct {
-	PersonID string  `url:"id"`               // ID of a person (REQUIRED)
-	Status   *string `url:"status,omitempty"` // Only fetch deals with specific status. If omitted, all not deleted deals are fetched
-	Start    *int    `url:"start,omitempty"`  // Pagination start
-	Limit    *int    `url:"limit,omitempty"`  // Items shown per page
-	Sort     *string `url:"sort,omitempty"`   // Field names and sorting mode separated by a comma (field_name_1 ASC, field_name_2 DESC). Only first-level field keys are supported (no nested keys)
+	Status *string `url:"status,omitempty"` // Only fetch deals with specific status. If omitted, all not deleted deals are fetched
+	Start  *int    `url:"start,omitempty"`  // Pagination start
+	Limit  *int    `url:"limit,omitempty"`  // Items shown per page
+	Sort   *string `url:"sort,omitempty"`   // Field names and sorting mode separated by a comma (field_name_1 ASC, field_name_2 DESC). Only first-level field keys are supported (no nested keys)
 }
 
 // ListDeals lists deals belonging to a person
