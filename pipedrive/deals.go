@@ -182,24 +182,72 @@ type SearchDealsOptions struct {
 	Limit          *int    `url:"limit,omitempty"`           // Items shown per page
 }
 
+// SearchDealsResponse is used to model the search person response
+type SearchDealsResponse struct {
+	Success   bool      `json:"success,omitempty"`
+	Data      DealItems `json:"data,omitempty"`
+	Error     string    `json:"error,omitempty"`
+	ErrorInfo string    `json:"error_info,omitempty"`
+}
+
+// DealItems contains a list of DealItem
+type DealItems struct {
+	Items []DealItem `json:"items,omitempty"`
+}
+
+// DealItem contains a SearchResultDeal
+type DealItem struct {
+	Deal        SearchResultDeal `json:"item,omitempty"`
+	ResultScore float64          `json:"result_score,omitempty"`
+}
+
+// SearchResultDeal is the model of a person from the search person response
+type SearchResultDeal struct {
+	ID     int                    `json:"id,omitempty"`
+	Type   string                 `json:"type,omitempty"`
+	Title  string                 `json:"title,omitempty"`
+	Value  *float64               `json:"value,omitempty"`
+	Status string                 `json:"status,omitempty"`
+	Stage  SearchResultDealStage  `json:"stage,omitempty"`
+	Person SearchResultDealPerson `json:"person,omitempty"`
+	//visibleto
+	//owner
+	//organization
+	//customer fields
+	//notes
+}
+
+// SearchResultDealStage struct
+type SearchResultDealStage struct {
+	ID   int    `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+// SearchResultDealPerson struct
+type SearchResultDealPerson struct {
+	ID   int    `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
 // SearchDeals searches all deals
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals_search
-func (c *Client) SearchDeals(ctx context.Context, opt *SearchDealsOptions, out ResponseModel) error {
+func (c *Client) SearchDeals(ctx context.Context, opt *SearchDealsOptions) (*SearchDealsResponse, error) {
 	req, err := c.NewRequest(http.MethodGet, "/deals/search", opt, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	out := &SearchDealsResponse{}
 	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if !out.Successful() {
-		return fmt.Errorf("not successful, error: %v", out.ErrorString())
+	if !out.Success {
+		return nil, fmt.Errorf("not successful, error: %v", out.Error)
 	}
 
-	return nil
+	return out, nil
 }
 
 // ListDealOptions is used to configure a list deals request. PersonID is required

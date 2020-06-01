@@ -188,7 +188,7 @@ func (c *Client) checkRateLimitBeforeDo(req *http.Request) *RateLimitError {
 }
 
 func (c *Client) checkResponse(r *http.Response) error {
-	if code := r.StatusCode; 200 <= code && code <= 299 {
+	if code := r.StatusCode; (200 <= code && code <= 299) || code == 410 { // 410 for deleting already deleted object
 		return nil
 	}
 
@@ -196,7 +196,10 @@ func (c *Client) checkResponse(r *http.Response) error {
 	errorResponse := &ErrorResponse{Response: r}
 
 	if err == nil && data != nil {
-		json.Unmarshal(data, errorResponse)
+		err = json.Unmarshal(data, errorResponse)
+		if err != nil {
+			return err
+		}
 	}
 
 	switch {
@@ -254,7 +257,7 @@ func (c *Client) Do(ctx context.Context, request *http.Request, out interface{})
 		return response, err
 	}
 
-	fmt.Println(string(respBytes))
+	// fmt.Println(string(respBytes))
 
 	if out != nil {
 		err = json.Unmarshal(respBytes, out)

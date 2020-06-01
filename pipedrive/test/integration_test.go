@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"reflect"
 	"testing"
 
 	"github.com/SocietyOne/pipedrive-api/pipedrive"
@@ -20,7 +19,7 @@ type TestPerson struct {
 	FirstChar *string `json:"first_char,omitempty"`
 }
 
-func TestPersons(t *testing.T) {
+func TestIntegration(t *testing.T) {
 
 	apiKey := os.Getenv("PIPEDRIVE_API_TOKEN")
 	client := pipedrive.NewClient(pipedrive.NewConfig(apiKey))
@@ -46,17 +45,4 @@ func TestPersons(t *testing.T) {
 	}
 	person := *createdPerson
 	fmt.Println(person)
-}
-
-func PrintType(in pipedrive.Person) {
-
-	interfacePerson := in.(interface{})
-
-	reflectType := reflect.TypeOf(interfacePerson)
-	reflectKind := reflectType.Kind()
-	reflectValue := reflect.ValueOf(interfacePerson)
-
-	fmt.Println(reflectType)
-	fmt.Println(reflectKind)
-	fmt.Println(reflectValue)
 }

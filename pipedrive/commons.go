@@ -57,8 +57,9 @@ type BaseResponse struct {
 	Data      interface{} `json:"data,omitempty"`
 	Error     string      `json:"error,omitempty"`
 	ErrorInfo string      `json:"error_info,omitempty"`
-	// AdditionalData AdditionalData  `json:"additional_data,omitempty"`
-	// RelatedObjects interface{}     `json:"related_objects,omitempty"`
+
+	AdditionalData AdditionalData `json:"additional_data,omitempty"`
+	RelatedObjects interface{}    `json:"related_objects,omitempty"`
 }
 
 func (b *BaseResponse) Successful() bool {

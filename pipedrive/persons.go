@@ -37,11 +37,11 @@ type BasePersonObject struct {
 	ID int `json:"id,omitempty" force:"id,omitempty"`
 
 	// Settable Fields
-	Name      *string  `json:"name,omitempty" force:"name,omitempty"`             // Required
-	FirstName *string  `json:"first_name,omitempty" force:"first_name,omitempty"` // Optional
-	LastName  *string  `json:"last_name,omitempty" force:"last_name,omitempty"`   // Optional
-	Phone     []*Phone `json:"phone,omitempty" force:"phone,omitempty"`
-	Email     []*Email `json:"email,omitempty" force:"email,omitempty"`
+	Name      *string  `json:"name,omitempty""`       // Required
+	FirstName *string  `json:"first_name,omitempty""` // Optional
+	LastName  *string  `json:"last_name,omitempty""`  // Optional
+	Phone     []*Phone `json:"phone,omitempty""`
+	Email     []*Email `json:"email,omitempty""`
 	OrgID     *OrgID   `json:"org_id,omitempty"`
 
 	// Unused Fields
@@ -174,31 +174,67 @@ func (c *Client) DeletePersons(ctx context.Context, ids []int) error {
 type SearchPersonsOptions struct {
 	Term           string  `url:"term"`                      // The search term to look for. Minimum 2 characters (or 1 if using exact_match). (REQUIRED)
 	Fields         *string `url:"fields,omitempty"`          // A comma-separated string array. The fields to perform the search from. Defaults to all of them.
-	ExactMatch     *bool   `url:"status,omitempty"`          // When enabled, only full exact matches against the given term are returned. It is not case sensitive.
+	ExactMatch     *bool   `url:"exact_match,omitempty"`     // When enabled, only full exact matches against the given term are returned. It is not case sensitive.
 	OrganizationID *int    `url:"organization_id,omitempty"` // Will filter Deals by the provided Organization ID. The upper limit of found Deals associated with the Organization is 2000.
 	IncludeFields  *string `url:"include_fields,omitempty"`  // Supports including optional fields in the results which are not provided by default.
 	Start          *int    `url:"start,omitempty"`           // Pagination start.
 	Limit          *int    `url:"limit,omitempty"`           // Items shown per page
 }
 
+// SearchPersonsResponse is used to model the search person response
+type SearchPersonsResponse struct {
+	Success   bool        `json:"success,omitempty"`
+	Data      PersonItems `json:"data,omitempty"`
+	Error     string      `json:"error,omitempty"`
+	ErrorInfo string      `json:"error_info,omitempty"`
+}
+
+// PersonItems contains a list of PersonItem
+type PersonItems struct {
+	Items []PersonItem `json:"items,omitempty"`
+}
+
+// PersonItem contains a SearchResultPerson
+type PersonItem struct {
+	Person      SearchResultPerson `json:"item,omitempty"`
+	ResultScore float64            `json:"result_score,omitempty"`
+}
+
+// SearchResultPerson is the model of a person from the search person response
+type SearchResultPerson struct {
+	ID    int      `json:"id,omitempty"`
+	Type  string   `json:"type,omitempty"`
+	Name  string   `json:"name,omitempty"`
+	Phone []string `json:"phone,omitempty"`
+	Email []string `json:"email,omitempty"`
+	//visibleto
+	//owner
+	//organization
+	//customer fields
+	//notes
+}
+
+// Search
+
 // SearchPersons Searches all persons
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_search
-func (c *Client) SearchPersons(ctx context.Context, opt *SearchPersonsOptions, out ResponseModel) error {
+func (c *Client) SearchPersons(ctx context.Context, opt *SearchPersonsOptions) (*SearchPersonsResponse, error) {
 	req, err := c.NewRequest(http.MethodGet, "/persons/search", opt, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	out := &SearchPersonsResponse{}
 	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if !out.Successful() {
-		return fmt.Errorf("not successful, error: %v", out.ErrorString())
+	if !out.Success {
+		return nil, fmt.Errorf("not successful, error: %v", out.Error)
 	}
 
-	return nil
+	return out, nil
 }
 
 //GetPerson returns a person by their id

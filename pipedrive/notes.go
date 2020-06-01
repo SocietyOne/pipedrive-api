@@ -15,9 +15,7 @@ type Note interface {
 // BaseNoteObject represents a basic pipedrive note
 type BaseNoteObject struct {
 	// Unsettable Fields
-	ID         int       `json:"id,omitempty"`
-	AddTime    Timestamp `json:"add_time,omitempty"`
-	UpdateTime Timestamp `json:"update_time,omitempty"`
+	ID int `json:"id,omitempty"`
 
 	// Settable Fields
 	UserID   *int    `json:"user_id,omitempty"`
@@ -27,6 +25,8 @@ type BaseNoteObject struct {
 	Content  *string `json:"content,omitempty"`
 
 	// Unused Fields
+	// AddTime    Timestamp `json:"add_time,omitempty"`
+	// UpdateTime Timestamp `json:"update_time,omitempty"`
 	// ActiveFlag               bool      `json:"active_flag,omitempty"`
 	// PinnedToDealFlag         bool      `json:"pinned_to_deal_flag,omitempty"`
 	// PinnedToPersonFlag       bool      `json:"pinned_to_person_flag,omitempty"`
