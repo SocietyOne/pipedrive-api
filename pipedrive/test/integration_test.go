@@ -21,6 +21,8 @@ type TestPerson struct {
 
 func TestIntegration(t *testing.T) {
 
+	os.Setenv("PIPEDRIVE_API_TOKEN", "487322921050ae1268e610da9c6be5a1759a16de") // This is a trial company token
+
 	apiKey := os.Getenv("PIPEDRIVE_API_TOKEN")
 	client := pipedrive.NewClient(pipedrive.NewConfig(apiKey))
 
