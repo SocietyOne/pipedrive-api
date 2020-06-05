@@ -38,9 +38,9 @@ type BaseDealObject struct {
 	Title        *string     `json:"title,omitempty"`
 	Value        *float64    `json:"value,omitempty"`
 	StageID      *int        `json:"stage_id,omitempty"`
-	PersonID     interface{} `json:"person_id,omitempty"`
-	OrgID        interface{} `json:"org_id"`
-	UserID       interface{} `json:"user_id,omitempty"`
+	PersonID     *PersonID   `json:"person_id,omitempty"`
+	OrgID        *OrgID      `json:"org_id"`
+	UserID       *UserID     `json:"user_id,omitempty"`
 	Status       *DealStatus `json:"status,omitempty"`
 	LostReason   *string     `json:"lost_reason,omitempty"`
 	PipelineID   *int        `json:"pipeline_id,omitempty"`

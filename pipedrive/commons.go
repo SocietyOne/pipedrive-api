@@ -175,3 +175,37 @@ func (o *OrgID) MarshalJSON() ([]byte, error) {
 	format := fmt.Sprintf("\"%d\"", o.ID)
 	return []byte(format), nil
 }
+
+type UserID struct {
+	// Settable Fields
+	ID      int `json:"id,omitempty"`
+	IDValue int `json:"value,omitempty"`
+
+	// Unsettable Fields
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	IsActive bool   `json:"active_flag,omitempty"`
+}
+
+//MarshalJSON is a Marshalling override
+func (u *UserID) MarshalJSON() ([]byte, error) {
+	format := fmt.Sprintf("\"%d\"", u.ID)
+	return []byte(format), nil
+}
+
+type PersonID struct {
+	// Settable Fields
+	ID int `json:"value,omitempty"`
+
+	// Unsettable Fields
+	Name     string   `json:"name,omitempty"`
+	Email    []*Email `json:"email,omitempty"`
+	Phone    []*Phone `json:"phone,omitempty"`
+	IsActive bool     `json:"active_flag,omitempty"`
+}
+
+//MarshalJSON is a Marshalling override
+func (p *PersonID) MarshalJSON() ([]byte, error) {
+	format := fmt.Sprintf("\"%d\"", p.ID)
+	return []byte(format), nil
+}

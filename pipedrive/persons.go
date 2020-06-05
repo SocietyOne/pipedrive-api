@@ -37,11 +37,11 @@ type BasePersonObject struct {
 	ID int `json:"id,omitempty" force:"id,omitempty"`
 
 	// Settable Fields
-	Name      *string  `json:"name,omitempty""`       // Required
-	FirstName *string  `json:"first_name,omitempty""` // Optional
-	LastName  *string  `json:"last_name,omitempty""`  // Optional
-	Phone     []*Phone `json:"phone,omitempty""`
-	Email     []*Email `json:"email,omitempty""`
+	Name      *string  `json:"name,omitempty"`       // Required
+	FirstName *string  `json:"first_name,omitempty"` // Optional
+	LastName  *string  `json:"last_name,omitempty"`  // Optional
+	Phone     []*Phone `json:"phone,omitempty"`
+	Email     []*Email `json:"email,omitempty"`
 	OrgID     *OrgID   `json:"org_id,omitempty"`
 
 	// Unused Fields
