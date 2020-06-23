@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	FieldTypeDeal         SearchItemFieldType = "dealField"
-	FieldTypePerson       SearchItemFieldType = "personField"
-	FieldTypeOrganization SearchItemFieldType = "organizationField"
-	FieldTypeProduct      SearchItemFieldType = "productField"
+	SearchItemFieldTypeDeal         SearchItemFieldType = "dealField"
+	SearchItemFieldTypePerson       SearchItemFieldType = "personField"
+	SearchItemFieldTypeOrganization SearchItemFieldType = "organizationField"
+	SearchItemFieldTypeProduct      SearchItemFieldType = "productField"
 )
 
 type SearchItemFieldType string
