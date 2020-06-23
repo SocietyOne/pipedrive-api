@@ -21,7 +21,7 @@ type SearchItemFieldsOptions struct {
 	FieldType     SearchItemFieldType `url:"field_type,omitempty"`      // The type of the field to perform the search from
 	ExactMatch    *bool               `url:"exact_match,omitempty"`     // When enabled, only full exact matches against the given term are returned. The search is case sensitive.
 	FieldKey      string              `url:"field_key"`                 // The key of the field to search from. The field key can be obtained by fetching the list of the fields using any of the fields' API GET methods (dealFields, personFields, etc.).
-	ReturnItemIDs *int                `url:"return_item_ids,omitempty"` // Whether to return the IDs of the matching items or not. When not set or set to 0 or false, only distinct values of the searched field are returned. When set to 1 or true, the ID of each found item is returned.
+	ReturnItemIDs *bool               `url:"return_item_ids,omitempty"` // Whether to return the IDs of the matching items or not. When not set or set to 0 or false, only distinct values of the searched field are returned. When set to 1 or true, the ID of each found item is returned.
 	Start         *int                `url:"start,omitempty"`           // Pagination start.
 	Limit         *int                `url:"limit,omitempty"`           // Items shown per page
 }
