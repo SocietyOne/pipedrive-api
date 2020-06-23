@@ -9,12 +9,16 @@ import (
 // Pipedrive API dcos: https://developers.pipedrive.com/docs/api/v1/#!/Deals
 
 type DealStatus string
+type SearchDealField string
 
 const (
-	Open    DealStatus = "open"
-	Won     DealStatus = "won"
-	Lost    DealStatus = "lost"
-	Deleted DealStatus = "deleted"
+	Open                   DealStatus      = "open"
+	Won                    DealStatus      = "won"
+	Lost                   DealStatus      = "lost"
+	Deleted                DealStatus      = "deleted"
+	SearchDealCustomFields SearchDealField = "custom_fields"
+	SearchDealNotes        SearchDealField = "notes"
+	SearchDealTitle        SearchDealField = "title"
 )
 
 //go:generate moq -out mock_deal.go . Deal
@@ -172,14 +176,14 @@ func (c *Client) DeleteDeals(ctx context.Context, ids []int) error {
 
 // SearchDealsOptions is used to configure a search request. Term is required
 type SearchDealsOptions struct {
-	Term           string  `url:"term"`                      // The search term to look for. Minimum 2 characters (or 1 if using exact_match). (REQUIRED)
-	Fields         *string `url:"fields,omitempty"`          // A comma-separated string array. The fields to perform the search from. Defaults to all of them.
-	ExactMatch     *bool   `url:"status,omitempty"`          // When enabled, only full exact matches against the given term are returned. It is not case sensitive.
-	PersonID       *int    `url:"person_id,omitempty"`       // Will filter Deals by the provided Person ID. The upper limit of found Deals associated with the Person is 2000.
-	OrganizationID *int    `url:"organization_id,omitempty"` // Will filter Deals by the provided Organization ID. The upper limit of found Deals associated with the Organization is 2000.
-	IncludeFields  *string `url:"include_fields,omitempty"`  // Supports including optional fields in the results which are not provided by default.
-	Start          *int    `url:"start,omitempty"`           // Pagination start.
-	Limit          *int    `url:"limit,omitempty"`           // Items shown per page
+	Term           string           `url:"term"`                      // The search term to look for. Minimum 2 characters (or 1 if using exact_match). (REQUIRED)
+	Fields         *SearchDealField `url:"fields,omitempty"`          // A comma-separated string array. The fields to perform the search from. Defaults to all of them.
+	ExactMatch     *bool            `url:"exact_match,omitempty"`     // When enabled, only full exact matches against the given term are returned. It is not case sensitive.
+	PersonID       *int             `url:"person_id,omitempty"`       // Will filter Deals by the provided Person ID. The upper limit of found Deals associated with the Person is 2000.
+	OrganizationID *int             `url:"organization_id,omitempty"` // Will filter Deals by the provided Organization ID. The upper limit of found Deals associated with the Organization is 2000.
+	// IncludeFields  *string          `url:"include_fields,omitempty"`  // Supports including optional fields in the results which are not provided by default.
+	Start *int `url:"start,omitempty"` // Pagination start.
+	Limit *int `url:"limit,omitempty"` // Items shown per page
 }
 
 // SearchDealsResponse is used to model the search person response

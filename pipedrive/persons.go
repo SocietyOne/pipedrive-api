@@ -6,11 +6,15 @@ import (
 	"net/http"
 )
 
-// PersonsService handles activities related
-// methods of the Pipedrive API.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons
-type PersonsService service
+type SearchPersonField string
+
+const (
+	SearchPersonCustomFields SearchPersonField = "custom_fields"
+	SearchPersonEmail        SearchPersonField = "email"
+	SearchPersonNotes        SearchPersonField = "notes"
+	SearchPersonPhone        SearchPersonField = "phone"
+	SearchPersonName         SearchPersonField = "name"
+)
 
 // Email field struct
 type Email struct {
@@ -172,13 +176,13 @@ func (c *Client) DeletePersons(ctx context.Context, ids []int) error {
 
 // SearchPersonsOptions is used to configure a search request. Term is required
 type SearchPersonsOptions struct {
-	Term           string  `url:"term"`                      // The search term to look for. Minimum 2 characters (or 1 if using exact_match). (REQUIRED)
-	Fields         *string `url:"fields,omitempty"`          // A comma-separated string array. The fields to perform the search from. Defaults to all of them.
-	ExactMatch     *bool   `url:"exact_match,omitempty"`     // When enabled, only full exact matches against the given term are returned. It is not case sensitive.
-	OrganizationID *int    `url:"organization_id,omitempty"` // Will filter Deals by the provided Organization ID. The upper limit of found Deals associated with the Organization is 2000.
-	IncludeFields  *string `url:"include_fields,omitempty"`  // Supports including optional fields in the results which are not provided by default.
-	Start          *int    `url:"start,omitempty"`           // Pagination start.
-	Limit          *int    `url:"limit,omitempty"`           // Items shown per page
+	Term           string             `url:"term"`                      // The search term to look for. Minimum 2 characters (or 1 if using exact_match). (REQUIRED)
+	Fields         *SearchPersonField `url:"fields,omitempty"`          // A comma-separated string array. The fields to perform the search from. Defaults to all of them.
+	ExactMatch     *bool              `url:"exact_match,omitempty"`     // When enabled, only full exact matches against the given term are returned. It is not case sensitive.
+	OrganizationID *int               `url:"organization_id,omitempty"` // Will filter Deals by the provided Organization ID. The upper limit of found Deals associated with the Organization is 2000.
+	// IncludeFields  *string            `url:"include_fields,omitempty"`  // Supports including optional fields in the results which are not provided by default.
+	Start *int `url:"start,omitempty"` // Pagination start.
+	Limit *int `url:"limit,omitempty"` // Items shown per page
 }
 
 // SearchPersonsResponse is used to model the search person response
