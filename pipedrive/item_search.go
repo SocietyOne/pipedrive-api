@@ -28,7 +28,7 @@ type SearchItemFieldsOptions struct {
 
 // SearchItemFields searches an object by a specific field
 // Pipedrive API https://developers.pipedrive.com/docs/api/v1/#!/ItemSearch/get_itemSearch_field
-func (c *Client) SearchItemFields(ctx context.Context, opt SearchItemFieldsOptions, out ResponseModel) error {
+func (c *Client) SearchItemFields(ctx context.Context, opt *SearchItemFieldsOptions, out ResponseModel) error {
 
 	req, err := c.NewRequest(http.MethodGet, "/itemSearch/field", opt, nil)
 	if err != nil {
