@@ -24,7 +24,7 @@ const (
 //go:generate moq -out mock_deal.go . Deal
 
 // Deal represents a Pipedrive deal.
-// Should embed BasePersonObject
+// Should embed BaseDealObject
 type Deal interface {
 }
 
