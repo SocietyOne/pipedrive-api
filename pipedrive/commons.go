@@ -1,7 +1,7 @@
 package pipedrive
 
 import (
-	"encoding/json"
+	"fmt"
 )
 
 const (
@@ -44,11 +44,30 @@ type AdditionalData struct {
 	Pagination          Pagination `json:"pagination"`
 }
 
-type DataResponse struct {
-	Success        bool            `json:"success,omitempty"`
-	Data           json.RawMessage `json:"data,omitempty"`
-	AdditionalData AdditionalData  `json:"additional_data,omitempty"`
-	RelatedObjects interface{}     `json:"related_objects,omitempty"`
+// ResponseModel is the response model
+// Should use the BaseResponse with expected struct as BaseResponse.Data.
+type ResponseModel interface {
+	Successful() bool
+	ErrorString() string
+}
+
+// BaseResponse is the base response model
+type BaseResponse struct {
+	Success   bool        `json:"success,omitempty"`
+	Data      interface{} `json:"data,omitempty"`
+	Error     string      `json:"error,omitempty"`
+	ErrorInfo string      `json:"error_info,omitempty"`
+
+	AdditionalData AdditionalData `json:"additional_data,omitempty"`
+	RelatedObjects interface{}    `json:"related_objects,omitempty"`
+}
+
+func (b *BaseResponse) Successful() bool {
+	return b.Success
+}
+
+func (b *BaseResponse) ErrorString() string {
+	return b.Error
 }
 
 type DeleteMultipleOptions struct {
@@ -136,4 +155,57 @@ const (
 // Search
 type SearchOptions struct {
 	Term string `url:"term,omitempty"`
+}
+
+type OrgID struct {
+	// Settable Fields
+	ID int `json:"value,omitempty"`
+
+	// Unsettable Fields
+	OwnerID     int    `json:"owner_id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	PeopleCount int    `json:"people_count,omitempty"`
+	Address     string `json:"address,omitempty"`
+	IsActive    bool   `json:"active_flag,omitempty"`
+	CCEmail     string `json:"cc_email,omitempty"`
+}
+
+//MarshalJSON is a Marshalling override
+func (o *OrgID) MarshalJSON() ([]byte, error) {
+	format := fmt.Sprintf("\"%d\"", o.ID)
+	return []byte(format), nil
+}
+
+type UserID struct {
+	// Settable Fields
+	ID      int `json:"id,omitempty"`
+	IDValue int `json:"value,omitempty"`
+
+	// Unsettable Fields
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	IsActive bool   `json:"active_flag,omitempty"`
+}
+
+//MarshalJSON is a Marshalling override
+func (u *UserID) MarshalJSON() ([]byte, error) {
+	format := fmt.Sprintf("\"%d\"", u.ID)
+	return []byte(format), nil
+}
+
+type PersonID struct {
+	// Settable Fields
+	ID int `json:"value,omitempty"`
+
+	// Unsettable Fields
+	Name     string   `json:"name,omitempty"`
+	Email    []*Email `json:"email,omitempty"`
+	Phone    []*Phone `json:"phone,omitempty"`
+	IsActive bool     `json:"active_flag,omitempty"`
+}
+
+//MarshalJSON is a Marshalling override
+func (p *PersonID) MarshalJSON() ([]byte, error) {
+	format := fmt.Sprintf("\"%d\"", p.ID)
+	return []byte(format), nil
 }

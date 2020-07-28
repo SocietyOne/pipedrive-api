@@ -6,350 +6,298 @@ import (
 	"net/http"
 )
 
-// DealService handles deals related
-// methods of the Pipedrive API.
-//
 // Pipedrive API dcos: https://developers.pipedrive.com/docs/api/v1/#!/Deals
-type DealService service
 
 type DealStatus string
+type SearchDealField string
 
 const (
-	Open    DealStatus = "open"
-	Won     DealStatus = "won"
-	Lost    DealStatus = "lost"
-	Deleted DealStatus = "deleted"
+	Open                   DealStatus      = "open"
+	Won                    DealStatus      = "won"
+	Lost                   DealStatus      = "lost"
+	Deleted                DealStatus      = "deleted"
+	SearchDealCustomFields SearchDealField = "custom_fields"
+	SearchDealNotes        SearchDealField = "notes"
+	SearchDealTitle        SearchDealField = "title"
 )
 
+//go:generate moq -out mock_deal.go . Deal
+
 // Deal represents a Pipedrive deal.
-type Deal struct {
-	ID                       int         `json:"id,omitempty"`
-	CreatorUserID            interface{} `json:"creator_user_id,omitempty"`
-	UserID                   interface{} `json:"user_id,omitempty"`
-	PersonID                 interface{} `json:"person_id,omitempty"`
-	OrgID                    interface{} `json:"org_id"`
-	StageID                  int         `json:"stage_id,omitempty"`
-	Title                    string      `json:"title,omitempty"`
-	Value                    float64     `json:"value,omitempty"`
-	Currency                 string      `json:"currency,omitempty"`
-	AddTime                  string      `json:"add_time,omitempty"`
-	UpdateTime               string      `json:"update_time,omitempty"`
-	StageChangeTime          string      `json:"stage_change_time,omitempty"`
-	Active                   bool        `json:"active,omitempty"`
-	Deleted                  bool        `json:"deleted,omitempty"`
-	Status                   string      `json:"status,omitempty"`
-	Probability              interface{} `json:"probability,omitempty"`
-	NextActivityDate         interface{} `json:"next_activity_date,omitempty"`
-	NextActivityTime         interface{} `json:"next_activity_time,omitempty"`
-	NextActivityID           interface{} `json:"next_activity_id,omitempty"`
-	LastActivityID           int         `json:"last_activity_id,omitempty"`
-	LastActivityDate         string      `json:"last_activity_date,omitempty"`
-	LostReason               string      `json:"lost_reason,omitempty"`
-	VisibleTo                string      `json:"visible_to,omitempty"`
-	CloseTime                string      `json:"close_time,omitempty"`
-	PipelineID               int         `json:"pipeline_id,omitempty"`
-	WonTime                  interface{} `json:"won_time,omitempty"`
-	FirstWonTime             interface{} `json:"first_won_time,omitempty"`
-	LostTime                 string      `json:"lost_time,omitempty"`
-	ProductsCount            int         `json:"products_count,omitempty"`
-	FilesCount               int         `json:"files_count,omitempty"`
-	NotesCount               int         `json:"notes_count,omitempty"`
-	FollowersCount           int         `json:"followers_count,omitempty"`
-	EmailMessagesCount       int         `json:"email_messages_count,omitempty"`
-	ActivitiesCount          int         `json:"activities_count,omitempty"`
-	DoneActivitiesCount      int         `json:"done_activities_count,omitempty"`
-	UndoneActivitiesCount    int         `json:"undone_activities_count,omitempty"`
-	ReferenceActivitiesCount int         `json:"reference_activities_count,omitempty"`
-	ParticipantsCount        int         `json:"participants_count,omitempty"`
-	ExpectedCloseDate        interface{} `json:"expected_close_date,omitempty"`
-	LastIncomingMailTime     interface{} `json:"last_incoming_mail_time,omitempty"`
-	LastOutgoingMailTime     interface{} `json:"last_outgoing_mail_time,omitempty"`
-	StageOrderNr             int         `json:"stage_order_nr,omitempty"`
-	PersonName               string      `json:"person_name,omitempty"`
-	OrgName                  string      `json:"org_name,omitempty"`
-	NextActivitySubject      interface{} `json:"next_activity_subject,omitempty"`
-	NextActivityType         interface{} `json:"next_activity_type,omitempty"`
-	NextActivityDuration     interface{} `json:"next_activity_duration,omitempty"`
-	NextActivityNote         interface{} `json:"next_activity_note,omitempty"`
-	FormattedValue           string      `json:"formatted_value,omitempty"`
-	RottenTime               interface{} `json:"rotten_time,omitempty"`
-	WeightedValue            float64     `json:"weighted_value,omitempty"`
-	FormattedWeightedValue   string      `json:"formatted_weighted_value,omitempty"`
-	OwnerName                string      `json:"owner_name,omitempty"`
-	CcEmail                  string      `json:"cc_email,omitempty"`
-	OrgHidden                bool        `json:"org_hidden,omitempty"`
-	PersonHidden             bool        `json:"person_hidden,omitempty"`
+// Should embed BaseDealObject
+type Deal interface {
 }
 
-func (d Deal) String() string {
-	return Stringify(d)
+// BaseDealObject represents a basic Pipedrive deal.
+type BaseDealObject struct {
+	// Unsettable Fields
+	ID         int    `json:"id,omitempty"`
+	Active     bool   `json:"active,omitempty"`
+	Deleted    bool   `json:"deleted,omitempty"`
+	PersonName string `json:"person_name,omitempty"`
+	OrgName    string `json:"org_name,omitempty"`
+	OwnerName  string `json:"owner_name,omitempty"`
+
+	// Settable Fields
+	Title        *string     `json:"title,omitempty"`
+	Value        *float64    `json:"value,omitempty"`
+	StageID      *int        `json:"stage_id,omitempty"`
+	PersonID     *PersonID   `json:"person_id,omitempty"`
+	OrgID        *OrgID      `json:"org_id"`
+	UserID       *UserID     `json:"user_id,omitempty"`
+	Status       *DealStatus `json:"status,omitempty"`
+	LostReason   *string     `json:"lost_reason,omitempty"`
+	PipelineID   *int        `json:"pipeline_id,omitempty"`
+	StageOrderNr *int        `json:"stage_order_nr,omitempty"`
+
+	// Unused fields
+	// Currency   string `json:"currency,omitempty"`
+	// AddTime    string `json:"add_time,omitempty"`
+	// UpdateTime string `json:"update_time,omitempty"`
+	// CreatorUserID   interface{} `json:"creator_user_id,omitempty"`
+	// StageChangeTime string      `json:"stage_change_time,omitempty"`
+	// Probability      interface{} `json:"probability,omitempty"`
+	// NextActivityDate interface{} `json:"next_activity_date,omitempty"`
+	// NextActivityTime interface{} `json:"next_activity_time,omitempty"`
+	// NextActivityID   interface{} `json:"next_activity_id,omitempty"`
+	// LastActivityID   int         `json:"last_activity_id,omitempty"`
+	// LastActivityDate string      `json:"last_activity_date,omitempty"`
+	// VisibleTo                string      `json:"visible_to,omitempty"`
+	// CloseTime                string      `json:"close_time,omitempty"`
+	// WonTime                  interface{} `json:"won_time,omitempty"`
+	// FirstWonTime             interface{} `json:"first_won_time,omitempty"`
+	// LostTime                 string      `json:"lost_time,omitempty"`
+	// ProductsCount            int         `json:"products_count,omitempty"`
+	// FilesCount               int         `json:"files_count,omitempty"`
+	// NotesCount               int         `json:"notes_count,omitempty"`
+	// FollowersCount           int         `json:"followers_count,omitempty"`
+	// EmailMessagesCount       int         `json:"email_messages_count,omitempty"`
+	// ActivitiesCount          int         `json:"activities_count,omitempty"`
+	// DoneActivitiesCount      int         `json:"done_activities_count,omitempty"`
+	// UndoneActivitiesCount    int         `json:"undone_activities_count,omitempty"`
+	// ReferenceActivitiesCount int         `json:"reference_activities_count,omitempty"`
+	// ParticipantsCount        int         `json:"participants_count,omitempty"`
+	// ExpectedCloseDate        interface{} `json:"expected_close_date,omitempty"`
+	// LastIncomingMailTime     interface{} `json:"last_incoming_mail_time,omitempty"`
+	// LastOutgoingMailTime     interface{} `json:"last_outgoing_mail_time,omitempty"`
+	// NextActivitySubject    interface{} `json:"next_activity_subject,omitempty"`
+	// NextActivityType       interface{} `json:"next_activity_type,omitempty"`
+	// NextActivityDuration   interface{} `json:"next_activity_duration,omitempty"`
+	// NextActivityNote       interface{} `json:"next_activity_note,omitempty"`
+	// FormattedValue         string      `json:"formatted_value,omitempty"`
+	// RottenTime             interface{} `json:"rotten_time,omitempty"`
+	// WeightedValue          float64     `json:"weighted_value,omitempty"`
+	// FormattedWeightedValue string      `json:"formatted_weighted_value,omitempty"`
+	// CcEmail                string      `json:"cc_email,omitempty"`
+	// OrgHidden              bool        `json:"org_hidden,omitempty"`
+	// PersonHidden           bool        `json:"person_hidden,omitempty"`
 }
 
-// DealsResponse represents multiple deals response.
-type DealsResponse struct {
-	Success        bool           `json:"success,omitempty"`
-	Data           []Deal         `json:"data,omitempty"`
-	AdditionalData AdditionalData `json:"additional_data,omitempty"`
-}
+// CreateDeal creates a deal.
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/post_deals
+func (c *Client) CreateDeal(ctx context.Context, deal Deal, out ResponseModel) error {
 
-// DealResponse represents single deal response.
-type DealResponse struct {
-	Success        bool           `json:"success,omitempty"`
-	Data           Deal           `json:"data,omitempty"`
-	AdditionalData AdditionalData `json:"additional_data,omitempty"`
-}
-
-// ListUpdates about a deal.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals_id_flow
-func (s *DealService) ListUpdates(ctx context.Context, id int) (*DataResponse, *Response, error) {
-	uri := fmt.Sprintf("/deals/%v/flow", id)
-	req, err := s.client.NewRequest(http.MethodGet, uri, nil, nil)
-
+	req, err := c.NewRequest(http.MethodPost, "/deals", nil, deal)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	var record *DataResponse
-
-	resp, err := s.client.Do(ctx, req, &record)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, resp, err
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
 	}
 
-	return record, resp, nil
+	return nil
 }
 
-// Find deals by name.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals_find
-func (s *DealService) Find(ctx context.Context, term string) (*DataResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/deals/find", &SearchOptions{
-		Term: term,
-	}, nil)
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var record *DataResponse
-
-	resp, err := s.client.Do(ctx, req, &record)
-
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return record, resp, nil
-}
-
-// List all deals.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals
-func (s *DealService) List(ctx context.Context) (*DataResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/deals", nil, nil)
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var record *DataResponse
-
-	resp, err := s.client.Do(ctx, req, &record)
-
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return record, resp, nil
-}
-
-// Duplicate a deal.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/post_deals_id_duplicate
-func (s *DealService) Duplicate(ctx context.Context, id int) (*DataResponse, *Response, error) {
-	uri := fmt.Sprintf("/deals/%v/duplicate", id)
-	req, err := s.client.NewRequest(http.MethodPost, uri, nil, nil)
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var record *DataResponse
-
-	resp, err := s.client.Do(ctx, req, &record)
-
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return record, resp, nil
-}
-
-// DealsMergeOptions specifices the optional parameters to the
-// DealService.Merge method.
-type DealsMergeOptions struct {
-	MergeWithID uint `url:"merge_with_id,omitempty"`
-}
-
-// Merge two deals.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/put_deals_id_merge
-func (s *DealService) Merge(ctx context.Context, id int, opt *DealsMergeOptions) (*Response, error) {
-	uri := fmt.Sprintf("/deals/%v/merge", id)
-	req, err := s.client.NewRequest(http.MethodPut, uri, nil, opt)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
-}
-
-// DealsUpdateOptions specifices the optional parameters to the
-// DealService.Update method.
-type DealsUpdateOptions struct {
-	Title          string `url:"title,omitempty"`
-	Value          string `url:"value,omitempty"`
-	Currency       string `url:"currency,omitempty"`
-	UserID         uint   `url:"user_id,omitempty"`
-	PersonID       uint   `url:"person_id,omitempty"`
-	OrganizationID uint   `url:"org_id,omitempty"`
-	StageID        uint   `url:"stage_id,omitempty"`
-	Status         string `url:"status,omitempty"`
-	LostReason     string `url:"lost_reason,omitempty"`
-	VisibleTo      uint   `url:"visible_to,omitempty"`
-}
-
-// Update a deal.
+// UpdateDeal updates a deal.
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/put_deals_id
-func (s *DealService) Update(ctx context.Context, id int, deal interface{}) (*DataResponse, *Response, error) {
+func (c *Client) UpdateDeal(ctx context.Context, id int, deal Deal, out ResponseModel) error {
 	uri := fmt.Sprintf("/deals/%v", id)
-	req, err := s.client.NewRequest(http.MethodPut, uri, nil, deal)
-
+	req, err := c.NewRequest(http.MethodPut, uri, nil, deal)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	var record *DataResponse
-
-	resp, err := s.client.Do(ctx, req, &record)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, resp, err
+		return err
 	}
 
-	return record, resp, nil
+	return nil
 }
 
-// DeleteFollower of a deal.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/delete_deals_id_followers_follower_id
-func (s *DealService) DeleteFollower(ctx context.Context, id int, followerID int) (*Response, error) {
-	uri := fmt.Sprintf("/deals/%v/followers/%v", id, followerID)
-	req, err := s.client.NewRequest(http.MethodDelete, uri, nil, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
-}
-
-// DeleteMultiple deletes deals in bulk.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/delete_deals
-func (s *DealService) DeleteMultiple(ctx context.Context, ids []int) (*Response, error) {
-	req, err := s.client.NewRequest(http.MethodDelete, "/deals", &DeleteMultipleOptions{
-		Ids: arrayToString(ids, ","),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
-}
-
-// DeleteParticipant deletes participant in a deal.
-//
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/delete_deals_id_participants_deal_participant_id
-func (s *DealService) DeleteParticipant(ctx context.Context, dealID int, participantID int) (*Response, error) {
-	uri := fmt.Sprintf("/deals/%v/participants/%v", dealID, participantID)
-	req, err := s.client.NewRequest(http.MethodDelete, uri, nil, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
-}
-
-// Delete a deal.
+// DeleteDeal deletes a deal.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/delete_deals_id
-func (s *DealService) Delete(ctx context.Context, id int) (*Response, error) {
+func (c *Client) DeleteDeal(ctx context.Context, id int) error {
 	uri := fmt.Sprintf("/deals/%v", id)
-	req, err := s.client.NewRequest(http.MethodDelete, uri, nil, nil)
-
+	req, err := c.NewRequest(http.MethodDelete, uri, nil, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	out := &BaseResponse{}
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
+	}
+	return nil
 }
 
-// DeleteAttachedProduct deletes attached product.
+// DeleteDeals deletes deals in bulk.
 //
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/delete_deals_id_products_product_attachment_id
-func (s *DealService) DeleteAttachedProduct(ctx context.Context, dealID int, productAttachmentID int) (*Response, error) {
-	uri := fmt.Sprintf("/deals/%v/products/%v", dealID, productAttachmentID)
-	req, err := s.client.NewRequest(http.MethodDelete, uri, nil, nil)
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/delete_deals
+func (c *Client) DeleteDeals(ctx context.Context, ids []int) error {
+	req, err := c.NewRequest(http.MethodDelete, "/deals", &DeleteMultipleOptions{
+		Ids: arrayToString(ids, ","),
+	}, nil)
+	if err != nil {
+		return err
+	}
 
+	out := &BaseResponse{}
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString()) // As of writing this, endpoint may not report errors correctly
+	}
+
+	return nil
+}
+
+// SearchDealsOptions is used to configure a search request. Term is required
+type SearchDealsOptions struct {
+	Term           string           `url:"term"`                      // The search term to look for. Minimum 2 characters (or 1 if using exact_match). (REQUIRED)
+	Fields         *SearchDealField `url:"fields,omitempty"`          // A comma-separated string array. The fields to perform the search from. Defaults to all of them.
+	ExactMatch     *bool            `url:"exact_match,omitempty"`     // When enabled, only full exact matches against the given term are returned. It is not case sensitive.
+	PersonID       *int             `url:"person_id,omitempty"`       // Will filter Deals by the provided Person ID. The upper limit of found Deals associated with the Person is 2000.
+	OrganizationID *int             `url:"organization_id,omitempty"` // Will filter Deals by the provided Organization ID. The upper limit of found Deals associated with the Organization is 2000.
+	// IncludeFields  *string          `url:"include_fields,omitempty"`  // Supports including optional fields in the results which are not provided by default.
+	Start *int `url:"start,omitempty"` // Pagination start.
+	Limit *int `url:"limit,omitempty"` // Items shown per page
+}
+
+// SearchDealsResponse is used to model the search person response
+type SearchDealsResponse struct {
+	Success   bool      `json:"success,omitempty"`
+	Data      DealItems `json:"data,omitempty"`
+	Error     string    `json:"error,omitempty"`
+	ErrorInfo string    `json:"error_info,omitempty"`
+}
+
+// DealItems contains a list of DealItem
+type DealItems struct {
+	Items []DealItem `json:"items,omitempty"`
+}
+
+// DealItem contains a SearchResultDeal
+type DealItem struct {
+	Deal        SearchResultDeal `json:"item,omitempty"`
+	ResultScore float64          `json:"result_score,omitempty"`
+}
+
+// SearchResultDeal is the model of a person from the search person response
+type SearchResultDeal struct {
+	ID     int                    `json:"id,omitempty"`
+	Type   string                 `json:"type,omitempty"`
+	Title  string                 `json:"title,omitempty"`
+	Value  *float64               `json:"value,omitempty"`
+	Status string                 `json:"status,omitempty"`
+	Stage  SearchResultDealStage  `json:"stage,omitempty"`
+	Person SearchResultDealPerson `json:"person,omitempty"`
+	//visibleto
+	//owner
+	//organization
+	//customer fields
+	//notes
+}
+
+// SearchResultDealStage struct
+type SearchResultDealStage struct {
+	ID   int    `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+// SearchResultDealPerson struct
+type SearchResultDealPerson struct {
+	ID   int    `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+// SearchDeals searches all deals
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/get_deals_search
+func (c *Client) SearchDeals(ctx context.Context, opt *SearchDealsOptions) (*SearchDealsResponse, error) {
+	req, err := c.NewRequest(http.MethodGet, "/deals/search", opt, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
-}
-
-// Create a deal.
-// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/post_deals
-func (s *DealService) Create(ctx context.Context, deal interface{}) (*DataResponse, *Response, error) {
-	uri := fmt.Sprintf("/deals")
-	req, err := s.client.NewRequest(http.MethodPost, uri, nil, deal)
-
+	out := &SearchDealsResponse{}
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
+	}
+	if !out.Success {
+		return nil, fmt.Errorf("not successful, error: %v", out.Error)
 	}
 
-	var record *DataResponse
-
-	resp, err := s.client.Do(ctx, req, &record)
-
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return record, resp, nil
+	return out, nil
 }
 
-func (s *DealService) Get(ctx context.Context, id int) (*DataResponse, *Response, error) {
+// ListDealOptions is used to configure a list deals request. PersonID is required
+type ListDealOptions struct {
+	Status *string `url:"status,omitempty"` // Only fetch deals with specific status. If omitted, all not deleted deals are fetched
+	Start  *int    `url:"start,omitempty"`  // Pagination start
+	Limit  *int    `url:"limit,omitempty"`  // Items shown per page
+	Sort   *string `url:"sort,omitempty"`   // Field names and sorting mode separated by a comma (field_name_1 ASC, field_name_2 DESC). Only first-level field keys are supported (no nested keys)
+}
+
+// ListDeals lists deals belonging to a person
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons_id_deals
+func (c *Client) ListDeals(ctx context.Context, personID int, opt *ListDealOptions, out ResponseModel) error {
+	uri := fmt.Sprintf("/persons/%v/deals", personID)
+	req, err := c.NewRequest(http.MethodGet, uri, opt, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.Do(ctx, req, out)
+	if err != nil {
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
+	}
+
+	return nil
+}
+
+// GetDeal gets a deal by ID
+func (c *Client) GetDeal(ctx context.Context, id int, out ResponseModel) error {
 	uri := fmt.Sprintf("/deals/%v", id)
-	req, err := s.client.NewRequest(http.MethodGet, uri, nil, nil)
-
+	req, err := c.NewRequest(http.MethodGet, uri, nil, nil)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	var record *DataResponse
-
-	resp, err := s.client.Do(ctx, req, &record)
-
+	_, err = c.Do(ctx, req, out)
 	if err != nil {
-		return nil, resp, err
+		return err
+	}
+	if !out.Successful() {
+		return fmt.Errorf("not successful, error: %v", out.ErrorString())
 	}
 
-	return record, resp, nil
+	return nil
 }

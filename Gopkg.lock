@@ -11,22 +11,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0251c9d88dc9b464bb030aeb5a0aa770d3ce117e452ecdff6361256a891f94e2"
-  name = "github.com/genert/pipedrive-api"
-  packages = ["pipedrive"]
-  pruneopts = "UT"
-  revision = "e143fc6bd97e1ba6d3b937be6cd1a2740b46af52"
-
-[[projects]]
-  digest = "1:7f89e0c888fb99c61055c646f5678aae645b0b0a1443d9b2dcd9964d850827ce"
-  name = "github.com/go-test/deep"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "6592d9cc0a499ad2d5f574fde80a2b5c5cc3b4f5"
-  version = "v1.0.1"
-
-[[projects]]
-  branch = "master"
   digest = "1:a63cff6b5d8b95638bfe300385d93b2a6d9d687734b863da8e09dc834510a690"
   name = "github.com/google/go-querystring"
   packages = ["query"]
@@ -42,19 +26,25 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:18752d0b95816a1b777505a97f71c7467a8445b8ffb55631a7bf779f6ba4fa83"
+  digest = "1:0bd81087c12be521236e09538226d5541a3d600930e42b9533d245ce3126ee28"
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   pruneopts = "UT"
-  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
-  version = "v1.2.2"
+  revision = "004e3cb72213e5e727e4e08f668ee6c8f27e5d32"
+  version = "v1.6.0"
+
+[[projects]]
+  branch = "v3"
+  digest = "1:f87d6c8edf5e57ae4a355abc05aca1dbf38b073068bba96c1fbbff852a1e2fd3"
+  name = "gopkg.in/yaml.v3"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2ff61e1afc866138abf1a8adf3cc89721090ac31"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/genert/pipedrive-api/pipedrive",
-    "github.com/go-test/deep",
     "github.com/google/go-querystring/query",
     "github.com/stretchr/testify/assert",
   ]
